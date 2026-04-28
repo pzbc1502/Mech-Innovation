@@ -165,13 +165,13 @@ int main(void)
   MX_TIM1_Init();
   MX_ADC1_Init();
   MX_UART4_Init();
-  MX_CAN1_Init();
+  MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
    
 	 
-	USER_CAN1_Filter_Init();																	// 初始化CAN滤波器
-	if(HAL_CAN_Start(&hcan1) != HAL_OK) { Error_Handler(); }	// 启动CAN控制器
-	if(HAL_CAN_ActivateNotification(&hcan1, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) { Error_Handler(); }	// 使能CAN控制器接收中断
+	USER_CAN2_Filter_Init();																	// 初始化CAN滤波器
+	if(HAL_CAN_Start(&hcan2) != HAL_OK) { Error_Handler(); }	// 启动CAN控制器
+	if(HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) { Error_Handler(); }	// 使能CAN控制器接收中断
 	
   	//USART6,电机驱动
 	__HAL_UART_CLEAR_IDLEFLAG(&huart6); 																	// 清除可能残留的 IDLE 标志
@@ -188,10 +188,11 @@ int main(void)
 	bsp_uart4_start_receive();
 	HX711_Init();
 	Relay_Init();
+	ServoSystem_Init();
 	
 
 
-	//任务初始化 
+	//任务初始化
 	App_Conwashing_Init();
 	printf("System Init Success!\r\n");
 	

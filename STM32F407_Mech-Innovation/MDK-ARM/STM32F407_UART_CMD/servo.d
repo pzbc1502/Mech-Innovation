@@ -47,3 +47,4 @@ stm32f407_uart_cmd\servo.o: ../Middle/HX711.h
 stm32f407_uart_cmd\servo.o: ../USER_cord/OLED.h
 stm32f407_uart_cmd\servo.o: ../USER_cord/OLED_Data.h
 stm32f407_uart_cmd\servo.o: ../USER_cord/servo.h
+stm32f407_uart_cmd\servo.o: ../Inc/tim.h

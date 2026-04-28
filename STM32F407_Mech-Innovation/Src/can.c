@@ -4,17 +4,6 @@
   * Description        : This file provides code for the configuration
   *                      of the CAN instances.
   ******************************************************************************
-  * @attention
-  *
-  * <h2><center>&copy; Copyright (c) 2024 STMicroelectronics.
-  * All rights reserved.</center></h2>
-  *
-  * This software component is licensed by ST under BSD 3-Clause license,
-  * the "License"; You may not use this file except in compliance with the
-  * License. You may obtain a copy of the License at:
-  *                        opensource.org/licenses/BSD-3-Clause
-  *
-  ******************************************************************************
   */
 
 /* Includes ------------------------------------------------------------------*/
@@ -26,24 +15,24 @@ __IO CAN_t can = {0};
 
 /* USER CODE END 0 */
 
-CAN_HandleTypeDef hcan1;
+CAN_HandleTypeDef hcan2;
 
-/* CAN1 init function */
-void MX_CAN1_Init(void)
+/* CAN2 init function */
+void MX_CAN2_Init(void)
 {
-  hcan1.Instance = CAN1;
-  hcan1.Init.Prescaler = 14;
-  hcan1.Init.Mode = CAN_MODE_NORMAL;
-  hcan1.Init.SyncJumpWidth = CAN_SJW_1TQ;
-  hcan1.Init.TimeSeg1 = CAN_BS1_4TQ;
-  hcan1.Init.TimeSeg2 = CAN_BS2_1TQ;
-  hcan1.Init.TimeTriggeredMode = DISABLE;
-  hcan1.Init.AutoBusOff = ENABLE;
-  hcan1.Init.AutoWakeUp = DISABLE;
-  hcan1.Init.AutoRetransmission = DISABLE;
-  hcan1.Init.ReceiveFifoLocked = DISABLE;
-  hcan1.Init.TransmitFifoPriority = DISABLE;
-  if (HAL_CAN_Init(&hcan1) != HAL_OK)
+  hcan2.Instance = CAN2;
+  hcan2.Init.Prescaler = 14;
+  hcan2.Init.Mode = CAN_MODE_NORMAL;
+  hcan2.Init.SyncJumpWidth = CAN_SJW_1TQ;
+  hcan2.Init.TimeSeg1 = CAN_BS1_4TQ;
+  hcan2.Init.TimeSeg2 = CAN_BS2_1TQ;
+  hcan2.Init.TimeTriggeredMode = DISABLE;
+  hcan2.Init.AutoBusOff = ENABLE;
+  hcan2.Init.AutoWakeUp = DISABLE;
+  hcan2.Init.AutoRetransmission = DISABLE;
+  hcan2.Init.ReceiveFifoLocked = DISABLE;
+  hcan2.Init.TransmitFifoPriority = DISABLE;
+  if (HAL_CAN_Init(&hcan2) != HAL_OK)
   {
     Error_Handler();
   }
@@ -51,176 +40,156 @@ void MX_CAN1_Init(void)
 
 void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
 {
-
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  if(canHandle->Instance==CAN1)
-  {
-  /* USER CODE BEGIN CAN1_MspInit 0 */
 
-  /* USER CODE END CAN1_MspInit 0 */
-    /* CAN1 clock enable */
+  if(canHandle->Instance==CAN2)
+  {
+    /*
+     * CAN2 is a slave CAN peripheral on STM32F4, so CAN1 clock must also be
+     * enabled even though the bus is physically on CAN2 PB12/PB13.
+     */
     __HAL_RCC_CAN1_CLK_ENABLE();
-  
+    __HAL_RCC_CAN2_CLK_ENABLE();
+
     __HAL_RCC_GPIOB_CLK_ENABLE();
-    /**CAN1 GPIO Configuration    
-    PB8     ------> CAN1_RX
-    PB9     ------> CAN1_TX 
+    /**CAN2 GPIO Configuration
+    PB12     ------> CAN2_RX
+    PB13     ------> CAN2_TX
     */
-    GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+    GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13;
     GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-    GPIO_InitStruct.Alternate = GPIO_AF9_CAN1;
+    GPIO_InitStruct.Alternate = GPIO_AF9_CAN2;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-    /* CAN1 interrupt Init */
-    HAL_NVIC_SetPriority(CAN1_RX0_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(CAN1_RX0_IRQn);
-  /* USER CODE BEGIN CAN1_MspInit 1 */
-
-  /* USER CODE END CAN1_MspInit 1 */
+    /* CAN2 interrupt Init */
+    HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 0, 0);
+    HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
   }
 }
 
 void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 {
-
-  if(canHandle->Instance==CAN1)
+  if(canHandle->Instance==CAN2)
   {
-  /* USER CODE BEGIN CAN1_MspDeInit 0 */
-
-  /* USER CODE END CAN1_MspDeInit 0 */
-    /* Peripheral clock disable */
+    __HAL_RCC_CAN2_CLK_DISABLE();
     __HAL_RCC_CAN1_CLK_DISABLE();
-  
-    /**CAN1 GPIO Configuration    
-    PB8     ------> CAN1_RX
-    PB9     ------> CAN1_TX 
+
+    /**CAN2 GPIO Configuration
+    PB12     ------> CAN2_RX
+    PB13     ------> CAN2_TX
     */
-    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_8|GPIO_PIN_9);
+    HAL_GPIO_DeInit(GPIOB, GPIO_PIN_12|GPIO_PIN_13);
 
-    /* CAN1 interrupt Deinit */
-    HAL_NVIC_DisableIRQ(CAN1_RX0_IRQn);
-  /* USER CODE BEGIN CAN1_MspDeInit 1 */
-
-  /* USER CODE END CAN1_MspDeInit 1 */
+    /* CAN2 interrupt Deinit */
+    HAL_NVIC_DisableIRQ(CAN2_RX0_IRQn);
   }
-} 
+}
 
 /* USER CODE BEGIN 1 */
 
-/**
-	* @brief   初始化滤波器
-	* @param   无
-	* @retval  无
-	*/
-void USER_CAN1_Filter_Init(void)
+void USER_CAN2_Filter_Init(void)
 {
-	// 过滤器结构体
-	CAN_FilterTypeDef  sFilterConfig;
+  CAN_FilterTypeDef sFilterConfig;
 
-	// 设置STM32的帧ID - 扩展帧格式 - 不过滤任何数据帧
-	__IO uint8_t id_o, im_o; __IO uint16_t id_l, id_h, im_l, im_h;
-	id_o = (0x00);
-	id_h = (uint16_t)((uint16_t)id_o >> 5);								// 高3位
-	id_l = (uint16_t)((uint16_t)id_o << 11) | CAN_ID_EXT; // 低5位
-	im_o = (0x00);
-	im_h = (uint16_t)((uint16_t)im_o >> 5);
-	im_l = (uint16_t)((uint16_t)im_o << 11) | CAN_ID_EXT;
+  __IO uint8_t id_o, im_o;
+  __IO uint16_t id_l, id_h, im_l, im_h;
 
-	// 过滤器参数
-	sFilterConfig.FilterBank = 0;                      		// 过滤器1
-	sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;  		// 掩码模式
-	sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT; 		// 32位过滤器位宽
-	sFilterConfig.FilterIdHigh = id_h;               			// 过滤器标识符的高16位值
-	sFilterConfig.FilterIdLow = id_l;                			// 过滤器标识符的低16位值
-	sFilterConfig.FilterMaskIdHigh = im_h;           			// 过滤器屏蔽标识符的高16位值
-	sFilterConfig.FilterMaskIdLow = im_l;            			// 过滤器屏蔽标识符的低16位值
-	sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0; 		// 指向过滤器的FIFO为0
-	sFilterConfig.FilterActivation = ENABLE;           		// 使能过滤器
-	sFilterConfig.SlaveStartFilterBank = 0;           		// 从过滤器配置，用来选择从过滤器的寄存器编号
-	
-	// 配置滤波器
-	if(HAL_CAN_ConfigFilter(&hcan1, &sFilterConfig) != HAL_OK)
-	{
-		Error_Handler();
-	}
+  id_o = 0x00;
+  id_h = (uint16_t)((uint16_t)id_o >> 5);
+  id_l = (uint16_t)((uint16_t)id_o << 11) | CAN_ID_EXT;
+  im_o = 0x00;
+  im_h = (uint16_t)((uint16_t)im_o >> 5);
+  im_l = (uint16_t)((uint16_t)im_o << 11) | CAN_ID_EXT;
+
+  sFilterConfig.FilterBank = 14;
+  sFilterConfig.FilterMode = CAN_FILTERMODE_IDMASK;
+  sFilterConfig.FilterScale = CAN_FILTERSCALE_32BIT;
+  sFilterConfig.FilterIdHigh = id_h;
+  sFilterConfig.FilterIdLow = id_l;
+  sFilterConfig.FilterMaskIdHigh = im_h;
+  sFilterConfig.FilterMaskIdLow = im_l;
+  sFilterConfig.FilterFIFOAssignment = CAN_RX_FIFO0;
+  sFilterConfig.FilterActivation = ENABLE;
+  sFilterConfig.SlaveStartFilterBank = 14;
+
+  if(HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
 }
 
-/**
-	* @brief   CAN发送多个字节
-	* @param   无
-	* @retval  无
-	*/
 void can_SendCmd(__IO uint8_t *cmd, uint8_t len)
 {
-	static uint32_t TxMailbox; __IO uint8_t i = 0, j = 0, k = 0, l = 0, packNum = 0, retry = 0;
+  static uint32_t TxMailbox;
+  __IO uint8_t i = 0, j = 0, k = 0, l = 0, packNum = 0, retry = 0;
 
-	// 除去ID地址和功能码后的数据长度
-	j = len - 2;
+  if((cmd == NULL) || (len < 3))
+  {
+    return;
+  }
 
-	// 发送数据
-	while(i < j)
-	{
-		// 数据个数
-		k = j - i;
+  j = len - 2;
 
-		// 填充缓存
-		can.CAN_TxMsg.StdId = 0x00;
-		can.CAN_TxMsg.ExtId = ((uint32_t)cmd[0] << 8) | (uint32_t)packNum;
-		can.txData[0] = cmd[1];
-		can.CAN_TxMsg.IDE = CAN_ID_EXT;
-		can.CAN_TxMsg.RTR = CAN_RTR_DATA;
+  while(i < j)
+  {
+    k = j - i;
 
-		// 小于8字节命令
-		if(k < 8)
-		{
-			for(l=0; l < k; l++,i++) { can.txData[l + 1] = cmd[i + 2]; } can.CAN_TxMsg.DLC = k + 1;
-		}
-		// 大于8字节命令，分包发送，每包数据最多发送8个字节
-		else
-		{
-			for(l=0; l < 7; l++,i++) { can.txData[l + 1] = cmd[i + 2]; } can.CAN_TxMsg.DLC = 8;
-		}
+    can.CAN_TxMsg.StdId = 0x00;
+    can.CAN_TxMsg.ExtId = ((uint32_t)cmd[0] << 8) | (uint32_t)packNum;
+    can.txData[0] = cmd[1];
+    can.CAN_TxMsg.IDE = CAN_ID_EXT;
+    can.CAN_TxMsg.RTR = CAN_RTR_DATA;
 
-		// 发送数据（有限重试，避免死等）
-		retry = 0;
-		while(HAL_CAN_AddTxMessage((&hcan1), (CAN_TxHeaderTypeDef *)(&can.CAN_TxMsg), (uint8_t *)(&can.txData), (&TxMailbox)) != HAL_OK)
-		{
-			if(++retry >= 50)
-			{
-				return;
-			}
-		}
+    if(k < 8)
+    {
+      for(l = 0; l < k; l++, i++)
+      {
+        can.txData[l + 1] = cmd[i + 2];
+      }
+      can.CAN_TxMsg.DLC = k + 1;
+    }
+    else
+    {
+      for(l = 0; l < 7; l++, i++)
+      {
+        can.txData[l + 1] = cmd[i + 2];
+      }
+      can.CAN_TxMsg.DLC = 8;
+    }
 
-		// 记录发送的第几包的数据
-		++packNum;
-	}
+    retry = 0;
+    while(HAL_CAN_AddTxMessage(&hcan2, (CAN_TxHeaderTypeDef *)(&can.CAN_TxMsg), (uint8_t *)(&can.txData), &TxMailbox) != HAL_OK)
+    {
+      if(++retry >= 50)
+      {
+        return;
+      }
+    }
+
+    ++packNum;
+  }
 }
 
-/**
-  * @brief CAN FIFO0接收回调：读取并清空FIFO，避免中断持续触发
-  */
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan)
 {
-	if(hcan->Instance != CAN1)
-	{
-		return;
-	}
+  if(hcan->Instance != CAN2)
+  {
+    return;
+  }
 
-	while(HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0) > 0U)
-	{
-		if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, (CAN_RxHeaderTypeDef *)(&can.CAN_RxMsg), (uint8_t *)(&can.rxData)) == HAL_OK)
-		{
-			can.rxFrameFlag = true;
-		}
-		else
-		{
-			break;
-		}
-	}
+  while(HAL_CAN_GetRxFifoFillLevel(hcan, CAN_RX_FIFO0) > 0U)
+  {
+    if(HAL_CAN_GetRxMessage(hcan, CAN_RX_FIFO0, (CAN_RxHeaderTypeDef *)(&can.CAN_RxMsg), (uint8_t *)(&can.rxData)) == HAL_OK)
+    {
+      can.rxFrameFlag = true;
+    }
+    else
+    {
+      break;
+    }
+  }
 }
 
 /* USER CODE END 1 */
-
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

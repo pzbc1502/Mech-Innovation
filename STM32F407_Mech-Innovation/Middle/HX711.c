@@ -1,34 +1,31 @@
 #include "HX711.h"
 #include "delay_us.h"
 
-
 HX711_Data_t hx711;
 
-/******************************************************************
- * 函数说明：HX711初始化（复位SCK）
- ******************************************************************/
 void HX711_Init(void)
 {
     HX711_SCK_LOW();
     HAL_Delay(10);
-    Get_Maopi(); // 上电自动去皮
+    HX711_Tare(HX711_TARE_SAMPLES);
 }
 
-/******************************************************************
- * 函数说明：读取HX711 AD值
- ******************************************************************/
 uint32_t HX711_Read(void)
 {
     uint32_t count = 0;
+    uint32_t tickStart = HAL_GetTick();
     uint8_t i;
 
-    // 等待DT线拉低，表示转换完成
-    // 为了防止死循环，实际工程中最好加超时判断
-    if(HX711_DT_READ() == 1) return 0; 
+    while(HX711_DT_READ() == 1)
+    {
+        if((HAL_GetTick() - tickStart) >= HX711_READY_TIMEOUT_MS)
+        {
+            return 0;
+        }
+    }
 
-    delay_us(1); // 这里的延时是为了满足时序要求
+    delay_us(1);
 
-    // 读取24位数据
     for(i = 0; i < 24; i++)
     {
         HX711_SCK_HIGH();
@@ -42,47 +39,109 @@ uint32_t HX711_Read(void)
         }
     }
 
-    // 第25个脉冲，设置增益为128
     HX711_SCK_HIGH();
     delay_us(1);
-    count = count ^ 0x800000; // 转换符号位
+    count = count ^ 0x800000;
     HX711_SCK_LOW();
     delay_us(1);
 
     return count;
 }
 
-/******************************************************************
- * 函数说明：获取毛皮（去皮）
- ******************************************************************/
-void Get_Maopi(void)
+void HX711_Tare(uint8_t samples)
 {
-    hx711.Weight_Maopi = HX711_Read();
+    uint64_t sum = 0;
+    uint8_t validCount = 0;
+
+    if(samples == 0)
+    {
+        samples = 1;
+    }
+
+    for(uint8_t i = 0; i < samples; i++)
+    {
+        uint32_t value = HX711_Read();
+        if(value != 0)
+        {
+            sum += value;
+            validCount++;
+        }
+        HAL_Delay(HX711_SAMPLE_DELAY_MS);
+    }
+
+    if(validCount > 0)
+    {
+        hx711.Weight_Maopi = (uint32_t)(sum / validCount);
+    }
 }
 
+void Get_Maopi(void)
+{
+    HX711_Tare(HX711_TARE_SAMPLES);
+}
 
-
-/******************************************************************
- * 函数说明：获取实际重量
- ******************************************************************/
 float Get_Weight(void)
 {
     hx711.Buffer = HX711_Read();
-    
-    // 简单的防抖动逻辑，可根据需要优化
-    if(hx711.Buffer == 0) return hx711.Weight_Real;
+
+    if(hx711.Buffer == 0)
+    {
+        return hx711.Weight_Real;
+    }
 
     if(hx711.Buffer > hx711.Weight_Maopi)
     {
-        hx711.Weight_Shiwu = hx711.Buffer - hx711.Weight_Maopi;
+        hx711.Weight_Shiwu = (int32_t)(hx711.Buffer - hx711.Weight_Maopi);
         hx711.Weight_Real = (float)hx711.Weight_Shiwu / GapValue;
     }
     else
     {
-        // 如果测量值小于毛皮值，说明出现负重或误差
-        hx711.Weight_Real = 0;
+        hx711.Weight_Shiwu = 0;
+        hx711.Weight_Real = 0.0f;
     }
-    
+
     return hx711.Weight_Real;
 }
 
+float HX711_GetStableWeight(uint8_t samples)
+{
+    float sum = 0.0f;
+    uint8_t validCount = 0;
+
+    if(samples == 0)
+    {
+        samples = 1;
+    }
+
+    for(uint8_t i = 0; i < samples; i++)
+    {
+        uint32_t raw = HX711_Read();
+        if(raw != 0)
+        {
+            hx711.Buffer = raw;
+
+            if(raw > hx711.Weight_Maopi)
+            {
+                hx711.Weight_Shiwu = (int32_t)(raw - hx711.Weight_Maopi);
+                hx711.Weight_Real = (float)hx711.Weight_Shiwu / GapValue;
+            }
+            else
+            {
+                hx711.Weight_Shiwu = 0;
+                hx711.Weight_Real = 0.0f;
+            }
+
+            sum += hx711.Weight_Real;
+            validCount++;
+        }
+
+        HAL_Delay(HX711_SAMPLE_DELAY_MS);
+    }
+
+    if(validCount > 0)
+    {
+        hx711.Weight_Real = sum / validCount;
+    }
+
+    return hx711.Weight_Real;
+}

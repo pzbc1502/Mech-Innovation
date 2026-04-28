@@ -36,7 +36,7 @@ void App_Conwashing_Init(void) {
     appCtrl.config.packMotor7TimeMs = 4000; // 7号电机运行时间
     appCtrl.config.packMotor8TimeMs = 9000; // 8号电机运行时间
     appCtrl.config.washTime    = 100; // 冲洗时间
-    appCtrl.config.weighTime   = 200; // 称重等待2秒
+    appCtrl.config.weighTime   = 1000; // 称重前稳定等待时间
     appCtrl.config.cutTime     = 200; // 切刀动作1秒
     appCtrl.config.servoTime   = 200; // 切刀动作1秒
 
@@ -219,8 +219,7 @@ static void Run_Auto_Process_FSM(void) {
 		// 2. 称重
         case STEP_LOWER_WEIGH:
             if (appCtrl.stateTimer > appCtrl.config.weighTime) {
-								Get_Maopi();
-                float weight = Get_Weight(); // 读取 HX711
+                float weight = HX711_GetStableWeight(HX711_WEIGHT_SAMPLES);
                 #ifdef DEBUG_ENABLE
                 printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
                 #endif
