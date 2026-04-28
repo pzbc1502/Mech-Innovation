@@ -50,6 +50,6 @@ stm32f407_uart_cmd\app_bluetooth_task.o: C:\Users\Administrator\AppData\Local\Ke
 stm32f407_uart_cmd\app_bluetooth_task.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 stm32f407_uart_cmd\app_bluetooth_task.o: ..\APP\app_Conveyor.h
 stm32f407_uart_cmd\app_bluetooth_task.o: ../Middle/Conveyor_belt.h
-stm32f407_uart_cmd\app_bluetooth_task.o: ../Inc/Emm_V5.h
+stm32f407_uart_cmd\app_bluetooth_task.o: ../USER_cord/Emm_V5.h
 stm32f407_uart_cmd\app_bluetooth_task.o: ../Inc/can.h
 stm32f407_uart_cmd\app_bluetooth_task.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

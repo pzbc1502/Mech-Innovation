@@ -96,37 +96,6 @@ static Category_Type k230_last_type = CATEGORY_UNKNOWN;
 static uint32_t k230_last_rx_time = 0;
 
 
-// ========== USART6 (电机驱动) 接收缓冲区 ==========
-MOTOR_RX_TypeDef motor_rx_data_t[MOTOR_BUFFER_QUANTITY];
-volatile uint8_t motor_buff_ctrl = 0;       						// DMA 写入索引
-volatile uint8_t motor_process_ctrl = 0;    						// 主循环处理索引
-volatile bool motor_new_data_flag = false;  						// 新数据标志        	// 实际接收长度
-
-//电机中断服务
-void USART6_DMAHandler(void)
-{
-    if (__HAL_UART_GET_FLAG(&huart6, UART_FLAG_IDLE) && 
-        __HAL_UART_GET_IT_SOURCE(&huart6, UART_IT_IDLE))
-    {
-		//清除 IDLE 标志
-        __HAL_UART_CLEAR_IDLEFLAG(&huart6);
-		//停止 DMA，防止干扰
-        HAL_UART_DMAStop(&huart6);
-
-        // 计算接收长度
-        motor_rx_data_t[motor_buff_ctrl].size = UART6_BUFFER_SIZE - __HAL_DMA_GET_COUNTER(huart6.hdmarx);
-
-        // 切换到下一个 buffer
-        motor_buff_ctrl = (motor_buff_ctrl + 1) % MOTOR_BUFFER_QUANTITY;
-
-        // 重启 DMA 到新 buffer
-        HAL_UART_Receive_DMA(&huart6, motor_rx_data_t[motor_buff_ctrl].buffer, UART6_BUFFER_SIZE);
-
-        // 通知主循环（如果需要进一步处理）
-        motor_new_data_flag = true;
-    }
-}
-
 /* USER CODE END 0 */
 
 /**
@@ -160,7 +129,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
-  MX_USART6_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM1_Init();
   MX_ADC1_Init();
@@ -169,14 +137,17 @@ int main(void)
   /* USER CODE BEGIN 2 */
    
 	 
-	USER_CAN2_Filter_Init();																	// 初始化CAN滤波器
-	if(HAL_CAN_Start(&hcan2) != HAL_OK) { Error_Handler(); }	// 启动CAN控制器
-	if(HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK) { Error_Handler(); }	// 使能CAN控制器接收中断
+	/* Motor control link: CAN2 -> Emm_V5 -> can_SendCmd. */
+	USER_CAN2_Filter_Init();
+	if (HAL_CAN_Start(&hcan2) != HAL_OK)
+	{
+		Error_Handler();
+	}
+	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+	{
+		Error_Handler();
+	}
 	
-  	//USART6,电机驱动
-	__HAL_UART_CLEAR_IDLEFLAG(&huart6); 																	// 清除可能残留的 IDLE 标志
-	__HAL_UART_ENABLE_IT(&huart6, UART_IT_IDLE); 															// 使能 USART2 的 IDLE 中断
-	HAL_UART_Receive_DMA(&huart6, motor_rx_data_t[motor_buff_ctrl].buffer, UART6_BUFFER_SIZE); 				// 启动 DMA 循环接收    
 
 	//用户初始化
 	OLED_Init();

@@ -16,13 +16,7 @@
 #define MOTOR_PACK_2       8
 #define BROADCAST_ADDR     0x00
 
-#define UART6_BUFFER_SIZE        (255)   // USART2 单帧最大长度
-#define MOTOR_BUFFER_QUANTITY 		5  // 双缓冲足够
-
-typedef struct {
-    uint8_t buffer[UART6_BUFFER_SIZE];
-    uint8_t size;
-} MOTOR_RX_TypeDef;
+/* Motor drivers are controlled through CAN2 via Emm_V5/can_SendCmd. */
 
 // 传送带层定义
 typedef enum {

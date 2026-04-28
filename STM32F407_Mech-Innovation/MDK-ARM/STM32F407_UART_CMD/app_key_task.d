@@ -50,6 +50,6 @@ stm32f407_uart_cmd\app_key_task.o: ../Middle/HX711.h
 stm32f407_uart_cmd\app_key_task.o: ../USER_cord/servo.h
 stm32f407_uart_cmd\app_key_task.o: ..\APP\app_Conveyor.h
 stm32f407_uart_cmd\app_key_task.o: ../Middle/Conveyor_belt.h
-stm32f407_uart_cmd\app_key_task.o: ../Inc/Emm_V5.h
+stm32f407_uart_cmd\app_key_task.o: ../USER_cord/Emm_V5.h
 stm32f407_uart_cmd\app_key_task.o: ../Inc/can.h
 stm32f407_uart_cmd\app_key_task.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h

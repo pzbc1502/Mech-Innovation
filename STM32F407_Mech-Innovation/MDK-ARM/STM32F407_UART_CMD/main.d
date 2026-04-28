@@ -54,7 +54,7 @@ stm32f407_uart_cmd\main.o: ../Inc/tim.h
 stm32f407_uart_cmd\main.o: ../Inc/usart.h
 stm32f407_uart_cmd\main.o: ../Inc/gpio.h
 stm32f407_uart_cmd\main.o: ../USER_cord/bsp_key.h
-stm32f407_uart_cmd\main.o: ../Inc/Emm_V5.h
+stm32f407_uart_cmd\main.o: ../USER_cord/Emm_V5.h
 stm32f407_uart_cmd\main.o: ../Middle/Conveyor_belt.h
 stm32f407_uart_cmd\main.o: ../Middle/mid_button.h
 stm32f407_uart_cmd\main.o: ../Middle/Servo_Ctrl.h

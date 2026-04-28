@@ -1,6 +1,6 @@
 stm32f407_uart_cmd\conveyor_belt.o: ..\Middle\Conveyor_belt.c
 stm32f407_uart_cmd\conveyor_belt.o: ..\Middle\Conveyor_belt.h
-stm32f407_uart_cmd\conveyor_belt.o: ../Inc/Emm_V5.h
+stm32f407_uart_cmd\conveyor_belt.o: ../USER_cord/Emm_V5.h
 stm32f407_uart_cmd\conveyor_belt.o: ../Inc/can.h
 stm32f407_uart_cmd\conveyor_belt.o: ../Inc/main.h
 stm32f407_uart_cmd\conveyor_belt.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h

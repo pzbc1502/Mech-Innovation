@@ -23,6 +23,7 @@ typedef enum {
     
     // --- 步骤2：中层切割 ---
     STEP_MIDDLE_RUN,    // 中层传送带运行（把东西运到刀下）
+    STEP_MIDDLE_CUTTING,
 //    STEP_MIDDLE_CUT,    // 停止并执行切割动作
     
     // --- 步骤3：下层称重 ---
@@ -30,10 +31,12 @@ typedef enum {
     STEP_LOWER_WEIGH,   // 停止并称重
     STEP_LOWER_RUN_2,
     STEP_PACKING,      // 打包流程：先7号电机后8号电机
+    STEP_PACK_WRAP,
 	STEP_LOWER_RUN_SERVO,
 	
     // --- 稳定运行 ---
     STEP_RUNNING,       // 正常运行
+    STEP_WAIT_NEXT_CYCLE,
     
     // --- 停机序列 (逆序) ---
     STEP_STOP_UPPER,    // 1. 先停上层(不再进料)
@@ -51,8 +54,11 @@ typedef struct {
     AutoProcessState_t autoState;
     
     uint32_t stateTimer;       // 状态机计时器
+    uint32_t stateStartTick;
+    uint32_t lastTaskTick;
     uint32_t runTime;          // 运行总时长
     bool isPaused;
+    bool stateEntered;
     
     // 参数配置
     struct {
@@ -72,6 +78,7 @@ typedef struct {
         uint32_t cutTime;      // 切割动作持续时间
         uint32_t washTime;     // 冲洗持续时间
 		uint32_t servoTime;     // 冲洗持续时间
+        uint32_t cycleDelayMs;
 		
     } config;
     

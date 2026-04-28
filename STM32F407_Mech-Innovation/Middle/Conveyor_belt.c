@@ -5,6 +5,7 @@ WashingSystem g_washingSystem;
 
 /**
  * @brief 初始化电机控制系统
+ * @note Motor commands use CAN2 through Emm_V5/can_SendCmd.
  * 核心修改：先配置软件参数，再发送硬件指令，确保逻辑一致性
  */
 void WashingSystem_Init(void) {
