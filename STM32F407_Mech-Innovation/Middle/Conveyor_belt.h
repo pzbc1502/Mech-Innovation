@@ -78,9 +78,6 @@ typedef struct {
 extern WashingSystem g_washingSystem; 
 
 
-// 让 App 层可以访问系统状态
-extern WashingSystem g_washingSystem; 
-
 /* --- 函数接口声明 --- */
 
 // 系统初始化

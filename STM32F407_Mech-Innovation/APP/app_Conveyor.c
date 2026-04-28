@@ -13,6 +13,8 @@ static void App_Enter_AutoState(AutoProcessState_t nextState);
 static bool App_Consume_StateEntry(void);
 static bool App_StateTimeout(uint32_t durationMs);
 static void App_SetActuatorsSafe(void);
+static void App_ResetWeighing(void);
+static bool App_ProcessWeighing(float *weight);
 static void Run_Auto_Process_FSM(void);
 static void Run_Maintenance_Mode(void);
 
@@ -45,6 +47,72 @@ static void App_SetActuatorsSafe(void)
     Set_Relay_Switch(RELAY_CUTTER, 0);
     Lower_Layer_Close();
     Middle_Layer_Close();
+}
+
+static void App_ResetWeighing(void)
+{
+    appCtrl.weighSampleCount = 0;
+    appCtrl.weighValidCount = 0;
+    appCtrl.weighAttemptCount = 0;
+    appCtrl.weighLastSampleTick = 0;
+    appCtrl.weighSum = 0.0f;
+}
+
+static bool App_ProcessWeighing(float *weight)
+{
+    uint32_t now = HAL_GetTick();
+    uint16_t maxAttempts = (uint16_t)(HX711_WEIGHT_SAMPLES * 5U);
+
+    if ((appCtrl.weighAttemptCount > 0) &&
+        ((now - appCtrl.weighLastSampleTick) < HX711_SAMPLE_DELAY_MS))
+    {
+        return false;
+    }
+
+    appCtrl.weighLastSampleTick = now;
+    appCtrl.weighAttemptCount++;
+
+    if (HX711_DT_READ() == GPIO_PIN_RESET)
+    {
+        uint32_t raw = HX711_Read();
+        if (raw != 0)
+        {
+            hx711.Buffer = raw;
+
+            if (raw > hx711.Weight_Maopi)
+            {
+                hx711.Weight_Shiwu = (int32_t)(raw - hx711.Weight_Maopi);
+                hx711.Weight_Real = (float)hx711.Weight_Shiwu / GapValue;
+            }
+            else
+            {
+                hx711.Weight_Shiwu = 0;
+                hx711.Weight_Real = 0.0f;
+            }
+
+            appCtrl.weighSum += hx711.Weight_Real;
+            appCtrl.weighValidCount++;
+            appCtrl.weighSampleCount++;
+        }
+    }
+
+    if ((appCtrl.weighSampleCount < HX711_WEIGHT_SAMPLES) &&
+        (appCtrl.weighAttemptCount < maxAttempts))
+    {
+        return false;
+    }
+
+    if (appCtrl.weighValidCount > 0)
+    {
+        hx711.Weight_Real = appCtrl.weighSum / (float)appCtrl.weighValidCount;
+    }
+
+    if (weight != NULL)
+    {
+        *weight = hx711.Weight_Real;
+    }
+
+    return true;
 }
 
 /**
@@ -277,17 +345,24 @@ static void Run_Auto_Process_FSM(void) {
 			
 		// 2. 称重
         case STEP_LOWER_WEIGH:
+            if (App_Consume_StateEntry()) {
+                App_ResetWeighing();
+            }
+
             if (App_StateTimeout(appCtrl.config.weighTime)) {
-                float weight = HX711_GetStableWeight(HX711_WEIGHT_SAMPLES);
-                #ifdef DEBUG_ENABLE
-                printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
-                #endif
-                Bluetooth_Printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
-				
-								OLED_ShowString(0, 48, "weight:", OLED_8X16);
-								OLED_ShowNum(60, 48, weight, 4,OLED_8X16);
-                // 称重完成，进入下一层
-                App_Enter_AutoState(STEP_LOWER_RUN_2);
+                float weight = 0.0f;
+
+                if (App_ProcessWeighing(&weight)) {
+                    #ifdef DEBUG_ENABLE
+                    printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
+                    #endif
+                    Bluetooth_Printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
+
+                    OLED_ShowString(0, 48, "weight:", OLED_8X16);
+                    OLED_ShowNum(60, 48, weight, 4,OLED_8X16);
+                    // 称重完成，进入下一层
+                    App_Enter_AutoState(STEP_LOWER_RUN_2);
+                }
             }
             break;			
  

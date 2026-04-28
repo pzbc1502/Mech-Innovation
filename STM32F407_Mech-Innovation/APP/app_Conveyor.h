@@ -59,6 +59,11 @@ typedef struct {
     uint32_t runTime;          // 运行总时长
     bool isPaused;
     bool stateEntered;
+    uint8_t weighSampleCount;
+    uint8_t weighValidCount;
+    uint16_t weighAttemptCount;
+    uint32_t weighLastSampleTick;
+    float weighSum;
     
     // 参数配置
     struct {
