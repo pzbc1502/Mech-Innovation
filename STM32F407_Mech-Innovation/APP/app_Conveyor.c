@@ -106,6 +106,11 @@ static bool App_ProcessWeighing(float *weight)
     {
         hx711.Weight_Real = appCtrl.weighSum / (float)appCtrl.weighValidCount;
     }
+    else
+    {
+        hx711.Weight_Shiwu = 0;
+        hx711.Weight_Real = 0.0f;
+    }
 
     if (weight != NULL)
     {
