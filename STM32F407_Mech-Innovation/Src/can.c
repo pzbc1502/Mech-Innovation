@@ -12,6 +12,7 @@
 /* USER CODE BEGIN 0 */
 
 __IO CAN_t can = {0};
+__IO bool can2Ready = false;
 
 /* USER CODE END 0 */
 
@@ -89,7 +90,7 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 
 /* USER CODE BEGIN 1 */
 
-void USER_CAN2_Filter_Init(void)
+bool USER_CAN2_Filter_Init(void)
 {
   CAN_FilterTypeDef sFilterConfig;
 
@@ -116,8 +117,10 @@ void USER_CAN2_Filter_Init(void)
 
   if(HAL_CAN_ConfigFilter(&hcan2, &sFilterConfig) != HAL_OK)
   {
-    Error_Handler();
+    return false;
   }
+
+  return true;
 }
 
 void can_SendCmd(__IO uint8_t *cmd, uint8_t len)
@@ -126,6 +129,11 @@ void can_SendCmd(__IO uint8_t *cmd, uint8_t len)
   __IO uint8_t i = 0, j = 0, k = 0, l = 0, packNum = 0, retry = 0;
 
   if((cmd == NULL) || (len < 3))
+  {
+    return;
+  }
+
+  if(!can2Ready)
   {
     return;
   }

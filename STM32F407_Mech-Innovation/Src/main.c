@@ -88,6 +88,7 @@ static uint32_t last_bluetooth_time = 0;
 static uint32_t last_scan_time = 0;
 static uint32_t last_wish_time= 0;
 static uint32_t last_ui_time = 0;
+volatile uint32_t g_boot_error_stage = 0;
 
 // K230 最新视觉结果缓存（主循环消费）
 static uint16_t k230_last_x = 0;
@@ -135,23 +136,40 @@ int main(void)
   MX_UART4_Init();
   MX_CAN2_Init();
   /* USER CODE BEGIN 2 */
-   
-	 
-	/* Motor control link: CAN2 -> Emm_V5 -> can_SendCmd. */
-	USER_CAN2_Filter_Init();
-	if (HAL_CAN_Start(&hcan2) != HAL_OK)
-	{
-		Error_Handler();
-	}
-	if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
-	{
-		Error_Handler();
-	}
-	
+  OLED_Init();
+  OLED_Clear();
+  OLED_ShowString(0, 0, "Boot...", OLED_8X16);
+  OLED_Update();
+
+  /* Motor control link: CAN2 -> Emm_V5 -> can_SendCmd. */
+  can2Ready = false;
+  if (!USER_CAN2_Filter_Init())
+  {
+    g_boot_error_stage = 1;
+  }
+  else if (HAL_CAN_Start(&hcan2) != HAL_OK)
+  {
+    g_boot_error_stage = 2;
+  }
+  else if (HAL_CAN_ActivateNotification(&hcan2, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+  {
+    g_boot_error_stage = 3;
+  }
+  else
+  {
+    can2Ready = true;
+  }
+
+  if (!can2Ready)
+  {
+    OLED_Clear();
+    OLED_ShowString(0, 0, "CAN2 ERR", OLED_8X16);
+    OLED_ShowString(0, 16, "Stage:", OLED_8X16);
+    OLED_ShowNum(56, 16, g_boot_error_stage, 1, OLED_8X16);
+    OLED_Update();
+  }
 
 	//用户初始化
-	OLED_Init();
-	OLED_Clear();
 	Key_Init();
 	user_button_init(); 
 	Debug_Init();
@@ -220,15 +238,15 @@ int main(void)
     }
 	
     // --- 任务3：蓝牙扫描 (每50ms执行一次)
-    if (now - last_bluetooth_time >= 50)
-    {
-        last_bluetooth_time = now;
-        
-        Process_Bluetooth_Command();     // 扫描蓝牙		
-    }	
+//    if (now - last_bluetooth_time >= 50)
+//    {
+//        last_bluetooth_time = now;
+//        
+//        Process_Bluetooth_Command();     // 扫描蓝牙		
+//    }	
 	
-    // --- 任务4：UI 刷新 (每500ms执行一次) 
-    if (now - last_ui_time >= 500)
+    // --- 任务4：UI 刷新 (每100ms执行一次) 
+    if (now - last_ui_time >= 100)
     {
 				last_ui_time = now;
 						

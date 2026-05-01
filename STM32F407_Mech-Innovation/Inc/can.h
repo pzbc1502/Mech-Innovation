@@ -47,6 +47,7 @@ extern CAN_HandleTypeDef hcan2;
 /* USER CODE BEGIN Private defines */
 
 extern __IO CAN_t can;
+extern __IO bool can2Ready;
 
 /* USER CODE END Private defines */
 
@@ -54,7 +55,7 @@ void MX_CAN2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 
-void USER_CAN2_Filter_Init(void);
+bool USER_CAN2_Filter_Init(void);
 void can_SendCmd(__IO uint8_t *cmd, uint8_t len);
 void HAL_CAN_RxFifo0MsgPendingCallback(CAN_HandleTypeDef *hcan);
 

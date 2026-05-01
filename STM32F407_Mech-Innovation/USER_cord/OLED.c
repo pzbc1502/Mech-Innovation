@@ -132,6 +132,7 @@ void OLED_W_SDA(uint8_t BitValue)
 void OLED_GPIO_Init(void)
 {
 	uint32_t i, j;
+	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	
 	/*在初始化前，加入适量延时，待OLED供电稳定*/
 	for (i = 0; i < 1000; i ++)
@@ -139,7 +140,15 @@ void OLED_GPIO_Init(void)
 		for (j = 0; j < 1000; j ++);
 	}
 	
-	MX_GPIO_Init();
+	/* OLED uses software I2C on PB8/PB9; CAN uses CAN2 PB12/PB13. */
+	__HAL_RCC_GPIOB_CLK_ENABLE();
+	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8 | GPIO_PIN_9, GPIO_PIN_SET);
+
+	GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 	
 	/*释放SCL和SDA*/
 	OLED_W_SCL(1);

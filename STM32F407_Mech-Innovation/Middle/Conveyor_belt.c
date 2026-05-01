@@ -24,8 +24,8 @@ void WashingSystem_Init(void) {
     g_washingSystem.upperBelt.motor1.maxSpeed = MAX_SPEED_UPPER;
     g_washingSystem.upperBelt.motor2.maxSpeed = MAX_SPEED_UPPER;
     // 方向统一配置，如果硬件接反了，在这里改 DIR_CW 即可
-    g_washingSystem.upperBelt.motor1.direction = DIR_CCW; 
-    g_washingSystem.upperBelt.motor2.direction = DIR_CCW;
+    g_washingSystem.upperBelt.motor1.direction = DIR_CW; 
+    g_washingSystem.upperBelt.motor2.direction = DIR_CW;
      
     // 配置中层电机
     g_washingSystem.middleBelt.motor1.motorID = MOTOR_MIDDLE_1;
@@ -33,7 +33,7 @@ void WashingSystem_Init(void) {
     g_washingSystem.middleBelt.motor1.maxSpeed = MAX_SPEED_MIDDLE;
     g_washingSystem.middleBelt.motor2.maxSpeed = MAX_SPEED_MIDDLE;
     g_washingSystem.middleBelt.motor1.direction = DIR_CCW;   //左边
-    g_washingSystem.middleBelt.motor2.direction = DIR_CCW;   //右边
+    g_washingSystem.middleBelt.motor2.direction = DIR_CW;   //右边
      
     // 配置下层电机
     g_washingSystem.lowerBelt.motor1.motorID = MOTOR_LOWER_1;

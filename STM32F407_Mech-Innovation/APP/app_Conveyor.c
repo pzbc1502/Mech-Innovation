@@ -134,9 +134,9 @@ void App_Conwashing_Init(void) {
     appCtrl.lastTaskTick = HAL_GetTick();
     
     // 3. 加载默认参数
-    appCtrl.config.upperSpeed = 130.0f;  // 上层速度
-    appCtrl.config.middleSpeed = 130.0f; // 中间速度
-    appCtrl.config.lowerSpeed = 130.0f;  // 下层速度
+    appCtrl.config.upperSpeed = 60.0f;  // 上层速度
+    appCtrl.config.middleSpeed = 60.0f; // 中间速度
+    appCtrl.config.lowerSpeed = 50.0f;  // 下层速度
     appCtrl.config.packConveyorSpeed = 100.0f; // 7号电机速度
     appCtrl.config.packWrapSpeed = 100.0f;     // 8号电机速度
      
