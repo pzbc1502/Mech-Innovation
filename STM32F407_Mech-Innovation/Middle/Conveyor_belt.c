@@ -20,6 +20,7 @@ void WashingSystem_Init(void) {
     
     // 配置上层电机参数
     g_washingSystem.upperBelt.motor1.motorID = MOTOR_UPPER_1;
+	   
     g_washingSystem.upperBelt.motor2.motorID = MOTOR_UPPER_2;
     g_washingSystem.upperBelt.motor1.maxSpeed = MAX_SPEED_UPPER;
     g_washingSystem.upperBelt.motor2.maxSpeed = MAX_SPEED_UPPER;
