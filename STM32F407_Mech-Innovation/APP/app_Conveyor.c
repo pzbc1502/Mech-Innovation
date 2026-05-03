@@ -6,8 +6,10 @@
 #include "Servo_Ctrl.h"
 #include "OLED.h"
 
+/* 应用层唯一控制实例：主循环和按键/蓝牙命令都通过它协调状态。 */
 static App_WashingCtrl_t appCtrl;
 
+/* 内部工具函数：只在本文件内使用，避免把状态机细节暴露到外部模块。 */
 static void App_Enter_AutoState(AutoProcessState_t nextState);
 static bool App_Consume_StateEntry(void);
 static bool App_StateTimeout(uint32_t durationMs);
@@ -19,7 +21,7 @@ static void Run_Maintenance_Mode(void);
 
 static void App_Enter_AutoState(AutoProcessState_t nextState)
 {
-    /* 状态计时统一使用 HAL_GetTick() 的真实经过时间，不依赖固定循环累加。 */
+    /* 状态计时统一使用 HAL_GetTick() 的真实经过时间，不依赖固定 10ms 累加。 */
     appCtrl.autoState = nextState;
     appCtrl.stateStartTick = HAL_GetTick();
     appCtrl.stateTimer = 0;
@@ -28,6 +30,7 @@ static void App_Enter_AutoState(AutoProcessState_t nextState)
 
 static bool App_Consume_StateEntry(void)
 {
+    /* 每个状态只在首次进入时执行一次启动动作，后续调度只检查超时条件。 */
     if (appCtrl.stateEntered)
     {
         appCtrl.stateEntered = false;
@@ -51,6 +54,7 @@ static void App_SetActuatorsSafe(void)
 
 static void App_ResetWeighing(void)
 {
+    /* 新一轮称重开始前，清空累加器，避免沿用上一轮残留重量。 */
     appCtrl.weighSampleCount = 0;
     appCtrl.weighValidCount = 0;
     appCtrl.weighAttemptCount = 0;
@@ -68,6 +72,7 @@ static bool App_ProcessWeighing(float *totalWeight, float *leftWeight, float *ri
     uint32_t now = HAL_GetTick();
     uint16_t maxAttempts = (uint16_t)(HX711_WEIGHT_SAMPLES * 5U);
 
+    /* 控制采样间隔，避免在一次 10ms 调度内连续读取 HX711。 */
     if ((appCtrl.weighAttemptCount > 0) &&
         ((now - appCtrl.weighLastSampleTick) < HX711_SAMPLE_DELAY_MS))
     {
@@ -118,6 +123,7 @@ static bool App_ProcessWeighing(float *totalWeight, float *leftWeight, float *ri
         appCtrl.weighSampleCount++;
     }
 
+    /* 样本足够或尝试次数耗尽时结束本轮称重，防止传感器缺失时卡死。 */
     if ((appCtrl.weighSampleCount < HX711_WEIGHT_SAMPLES) &&
         (appCtrl.weighAttemptCount < maxAttempts))
     {
@@ -156,7 +162,8 @@ static bool App_ProcessWeighing(float *totalWeight, float *leftWeight, float *ri
 }
 
 /**
- * @brief 应用层初始化
+ * @brief 应用层初始化。
+ * @note 初始化底层电机系统、状态机默认参数和蓝牙提示。
  */
 void App_Conwashing_Init(void)
 {
@@ -179,6 +186,7 @@ void App_Conwashing_Init(void)
     appCtrl.config.weighTime = 1000;
     appCtrl.config.cutTime = 200;
     appCtrl.config.servoTime = 200;
+    /* 当前 v1 不解析 CAN 到位反馈，推板推动/返回按时间估算完成。 */
     /* 30RPM、8mm 导程、300mm 行程约 75s，80s 留少量余量。 */
     appCtrl.config.lowerPushTimeoutMs = 80000;
     appCtrl.config.packTailTimeMs = 3000;
@@ -192,7 +200,8 @@ void App_Conwashing_Init(void)
 }
 
 /**
- * @brief 应用层主任务，建议每10ms调用一次
+ * @brief 应用层主任务，建议每 10ms 调用一次。
+ * @note 本函数不主动阻塞等待流程完成，所有阶段由状态机和真实时间推进。
  */
 void App_Conwashing_Task(void)
 {
@@ -248,7 +257,8 @@ void App_Conwashing_Task(void)
 }
 
 /**
- * @brief 第三代自动清洗流程状态机
+ * @brief 第三代自动清洗流程状态机。
+ * @note 流程为：上层 -> 中层切割 -> 双 HX711 称重 -> 5/6 推板 + 7 打包 -> 推板返回。
  */
 static void Run_Auto_Process_FSM(void)
 {
@@ -274,6 +284,7 @@ static void Run_Auto_Process_FSM(void)
         case STEP_UPPER_RUN:
             if (App_Consume_StateEntry())
             {
+                /* 上层启动：1/2 号电机同步运行，水泵打开。 */
                 StartConveyorBelt(LAYER_UPPER, appCtrl.config.upperSpeed);
                 Set_Relay_Switch(RELAY_PUMP, 1);
 #ifdef DEBUG_ENABLE
@@ -297,6 +308,7 @@ static void Run_Auto_Process_FSM(void)
         case STEP_MIDDLE_RUN:
             if (App_Consume_StateEntry())
             {
+                /* 中层启动：3/4 号电机同步运行，下料舵机打开。 */
                 StartConveyorBelt(LAYER_MIDDLE, appCtrl.config.middleSpeed);
                 Lower_Layer_Open();
 #ifdef DEBUG_ENABLE
@@ -314,6 +326,7 @@ static void Run_Auto_Process_FSM(void)
         case STEP_MIDDLE_CUTTING:
             if (App_Consume_StateEntry())
             {
+                /* 中层切割：切刀打开，中层继续运行到设定时长。 */
                 Set_Relay_Switch(RELAY_CUTTER, 1);
 #ifdef DEBUG_ENABLE
                 printf("[APP] Middle Process: Cutter ON\r\n");
@@ -401,7 +414,7 @@ static void Run_Auto_Process_FSM(void)
         case STEP_LOWER_RETURN:
             if (App_Consume_StateEntry())
             {
-                /* v1 暂无线位开关和 CAN 到位解析，返回完成按时间估算。 */
+                /* v1 暂无限位开关和 CAN 到位解析，返回完成按时间估算。 */
                 StartLowerReturn(appCtrl.config.lowerScrewSpeed);
 #ifdef DEBUG_ENABLE
                 printf("[APP] Lower Screw Return Start.\r\n");
@@ -492,12 +505,16 @@ static void Run_Auto_Process_FSM(void)
 }
 
 /**
- * @brief 维护模式逻辑
+ * @brief 维护模式逻辑。
+ * @note 当前预留，后续可放入单电机、舵机、继电器等手动测试入口。
  */
 static void Run_Maintenance_Mode(void)
 {
 }
 
+/**
+ * @brief 启动自动流程命令。
+ */
 void App_Send_Cmd_StartAuto(void)
 {
     if (appCtrl.currentMode == MODE_IDLE)
@@ -510,6 +527,10 @@ void App_Send_Cmd_StartAuto(void)
     }
 }
 
+/**
+ * @brief 停止命令。
+ * @note 自动模式下走优雅停机；非自动模式下直接关闭系统并回到空闲。
+ */
 void App_Send_Cmd_Stop(void)
 {
     if (appCtrl.currentMode == MODE_AUTO_CLEAN)
@@ -528,6 +549,9 @@ void App_Send_Cmd_Stop(void)
     }
 }
 
+/**
+ * @brief 急停命令，立即进入错误模式。
+ */
 void App_Send_Cmd_Emergency(void)
 {
     EmergencyStopAll();
@@ -535,6 +559,9 @@ void App_Send_Cmd_Emergency(void)
     appCtrl.currentMode = MODE_ERROR;
 }
 
+/**
+ * @brief 从错误/急停状态恢复到空闲状态。
+ */
 void App_Send_Cmd_Resume(void)
 {
     if (appCtrl.currentMode == MODE_ERROR)
