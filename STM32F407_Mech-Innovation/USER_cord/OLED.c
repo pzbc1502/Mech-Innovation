@@ -99,7 +99,7 @@ uint8_t OLED_DisplayBuf[8][128];
 void OLED_W_SCL(uint8_t BitValue)
 {
 	/*根据BitValue的值，将SCL置高电平或者低电平*/
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8, (GPIO_PinState)BitValue);
+	HAL_GPIO_WritePin(OLED_SCL_GPIO_Port, OLED_SCL_Pin, (GPIO_PinState)BitValue);
 	
 	/*如果单片机速度过快，可在此添加适量延时，以避免超出I2C通信的最大速度*/
 	//...
@@ -116,7 +116,7 @@ void OLED_W_SCL(uint8_t BitValue)
 void OLED_W_SDA(uint8_t BitValue)
 {
 	/*根据BitValue的值，将SDA置高电平或者低电平*/
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, (GPIO_PinState)BitValue);
+	HAL_GPIO_WritePin(OLED_SDA_GPIO_Port, OLED_SDA_Pin, (GPIO_PinState)BitValue);
 	
 	/*如果单片机速度过快，可在此添加适量延时，以避免超出I2C通信的最大速度*/
 	//...
@@ -142,13 +142,17 @@ void OLED_GPIO_Init(void)
 	
 	/* OLED uses software I2C on PB8/PB9; CAN uses CAN2 PB12/PB13. */
 	__HAL_RCC_GPIOB_CLK_ENABLE();
-	HAL_GPIO_WritePin(GPIOB, GPIO_PIN_8 | GPIO_PIN_9, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(OLED_SCL_GPIO_Port, OLED_SCL_Pin, GPIO_PIN_SET);
+	HAL_GPIO_WritePin(OLED_SDA_GPIO_Port, OLED_SDA_Pin, GPIO_PIN_SET);
 
-	GPIO_InitStruct.Pin = GPIO_PIN_8 | GPIO_PIN_9;
+	GPIO_InitStruct.Pin = OLED_SCL_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+	HAL_GPIO_Init(OLED_SCL_GPIO_Port, &GPIO_InitStruct);
+
+	GPIO_InitStruct.Pin = OLED_SDA_Pin;
+	HAL_GPIO_Init(OLED_SDA_GPIO_Port, &GPIO_InitStruct);
 	
 	/*释放SCL和SDA*/
 	OLED_W_SCL(1);

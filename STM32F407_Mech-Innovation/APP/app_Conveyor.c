@@ -47,7 +47,6 @@ static void App_SetActuatorsSafe(void)
     Set_Relay_Switch(RELAY_PUMP, 0);
     Set_Relay_Switch(RELAY_CUTTER, 0);
     Lower_Layer_Close();
-    Middle_Layer_Close();
 }
 
 static void App_ResetWeighing(void)
@@ -176,7 +175,7 @@ void App_Conwashing_Init(void)
     appCtrl.config.runDuration = 5000;
     appCtrl.config.startDelayMs = 500;
     appCtrl.config.stopDelayMs = 5000;
-    appCtrl.config.washTime = 100;
+    appCtrl.config.washTime = 200;
     appCtrl.config.weighTime = 1000;
     appCtrl.config.cutTime = 200;
     appCtrl.config.servoTime = 200;

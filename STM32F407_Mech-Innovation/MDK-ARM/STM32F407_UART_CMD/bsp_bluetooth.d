@@ -48,4 +48,3 @@ stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/OLED_Data.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/servo.h
 stm32f407_uart_cmd\bsp_bluetooth.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
 stm32f407_uart_cmd\bsp_bluetooth.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-stm32f407_uart_cmd\bsp_bluetooth.o: ..\USER_cord\K230_cmd.h

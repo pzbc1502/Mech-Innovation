@@ -61,4 +61,3 @@ stm32f407_uart_cmd\main.o: ../Middle/Servo_Ctrl.h
 stm32f407_uart_cmd\main.o: ../APP/app_bluetooth_task.h
 stm32f407_uart_cmd\main.o: ../APP/app_Conveyor.h
 stm32f407_uart_cmd\main.o: ../APP/app_key_task.h
-stm32f407_uart_cmd\main.o: ../USER_cord/K230_cmd.h

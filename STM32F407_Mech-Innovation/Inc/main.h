@@ -71,6 +71,10 @@ void Error_Handler(void);
 #define HX711_LEFT_SCK_GPIO_Port GPIOB
 #define HX711_LEFT_DT_Pin GPIO_PIN_11
 #define HX711_LEFT_DT_GPIO_Port GPIOB
+#define OLED_SCL_Pin GPIO_PIN_8
+#define OLED_SCL_GPIO_Port GPIOB
+#define OLED_SDA_Pin GPIO_PIN_9
+#define OLED_SDA_GPIO_Port GPIOB
 #define HX711_RIGHT_SCK_Pin GPIO_PIN_14
 #define HX711_RIGHT_SCK_GPIO_Port GPIOB
 #define HX711_RIGHT_DT_Pin GPIO_PIN_15

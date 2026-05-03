@@ -3,8 +3,8 @@
 
 #include "main.h"
 #include "Conveyor_belt.h"
+#include <stdbool.h>
 
-// 系统运行模式
 typedef enum {
     MODE_IDLE,
     MODE_AUTO_CLEAN,
@@ -12,7 +12,7 @@ typedef enum {
     MODE_ERROR
 } SystemMode_t;
 
-// 第三代自动流程子状态：第三层不再是传送带，而是称重板 + 5/6丝杆推板 + 7号打包
+/* Third-generation automatic process states. */
 typedef enum {
     STEP_READY,
 
@@ -35,7 +35,6 @@ typedef enum {
     STEP_DONE
 } AutoProcessState_t;
 
-// 应用层控制句柄
 typedef struct {
     SystemMode_t currentMode;
     AutoProcessState_t autoState;
@@ -45,9 +44,8 @@ typedef struct {
     uint32_t lastTaskTick;
     uint32_t runTime;
     bool isPaused;
-    bool stateEntered;          // 进入新状态后的第一个调度周期为 true
+    bool stateEntered;
 
-    // 非阻塞称重累加器；每个已就绪的 HX711 通道贡献一次有效采样。
     uint8_t weighSampleCount;
     uint8_t weighValidCount;
     uint16_t weighAttemptCount;
@@ -71,9 +69,9 @@ typedef struct {
         uint32_t cutTime;
         uint32_t washTime;
         uint32_t servoTime;
-        uint32_t lowerPushTimeoutMs;    // v1 暂用时间估算，不解析 CAN 到位反馈
-        uint32_t packTailTimeMs;        // 5/6 推板完成后，7号电机继续收尾运行
-        uint32_t lowerReturnTimeoutMs;  // v1 暂用时间估算，不依赖限位开关
+        uint32_t lowerPushTimeoutMs;
+        uint32_t packTailTimeMs;
+        uint32_t lowerReturnTimeoutMs;
         uint32_t cycleDelayMs;
     } config;
 } App_WashingCtrl_t;

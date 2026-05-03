@@ -45,7 +45,6 @@
 #include "app_bluetooth_task.h"
 #include "app_Conveyor.h"
 #include "app_key_task.h"
-#include "K230_cmd.h"
 
 
 /* USER CODE END Includes */
@@ -89,12 +88,6 @@ static uint32_t last_scan_time = 0;
 static uint32_t last_wish_time= 0;
 static uint32_t last_ui_time = 0;
 volatile uint32_t g_boot_error_stage = 0;
-
-// K230 最新视觉结果缓存（主循环消费）
-static uint16_t k230_last_x = 0;
-static uint16_t k230_last_y = 0;
-static Category_Type k230_last_type = CATEGORY_UNKNOWN;
-static uint32_t k230_last_rx_time = 0;
 
 
 /* USER CODE END 0 */
@@ -173,7 +166,6 @@ int main(void)
 	user_button_init(); 
 	Debug_Init();
 	Bluetooth_Init();
-	bsp_uart4_start_receive();
 	HX711_Init();
 	Relay_Init();
 	ServoSystem_Init();
@@ -211,19 +203,6 @@ int main(void)
     {
         last_wish_time = now;
 
-//        // 消费 K230 新数据（由 UART4 中断生产）
-//        __disable_irq();
-//        if (k230_recv_data.is_valid)
-//        {
-//            k230_last_x = k230_recv_data.x;
-//            k230_last_y = k230_recv_data.y;
-//            k230_last_type = k230_recv_data.category_type;
-//            k230_recv_data.is_valid = 0;
-//            k230_last_rx_time = now;
-//        }
-//        __enable_irq();
-
-
         App_Conwashing_Task();  // 运行传送带状态机
     }
     
@@ -237,12 +216,13 @@ int main(void)
     }
 	
     // --- 任务3：蓝牙扫描 (每50ms执行一次)
-//    if (now - last_bluetooth_time >= 50)
-//    {
-//        last_bluetooth_time = now;
-//        
-//        Process_Bluetooth_Command();     // 扫描蓝牙		
-//    }	
+    if (now - last_bluetooth_time >= 50)
+    {
+        last_bluetooth_time = now;
+
+        Process_Bluetooth_Command();
+
+    }
 	
     // --- 任务4：UI 刷新 (每100ms执行一次) 
     if (now - last_ui_time >= 100)
@@ -259,21 +239,6 @@ int main(void)
 				case MODE_ERROR:     OLED_ShowString(48, 0, "Error", OLED_8X16); break;
 				default:             OLED_ShowString(48, 0, "Wait ", OLED_8X16); break;
 				}
-
-//        OLED_ShowString(0, 16, "K230:", OLED_8X16);
-//        switch(k230_last_type) {
-//            case CATEGORY_YELLOW: OLED_ShowString(48, 16, "YEL ", OLED_8X16); break;
-//            case CATEGORY_ROOT:   OLED_ShowString(48, 16, "ROOT", OLED_8X16); break;
-//            default:              OLED_ShowString(48, 16, "UNK ", OLED_8X16); break;
-//        }
-
-//        OLED_ShowString(0, 32, "X:", OLED_8X16);
-//        OLED_ShowNum(16, 32, k230_last_x, 3, OLED_8X16);
-//        OLED_ShowString(56, 32, "Y:", OLED_8X16);
-//        OLED_ShowNum(72, 32, k230_last_y, 3, OLED_8X16);
-
-//        OLED_ShowString(0, 48, "V:", OLED_8X16);
-//        OLED_ShowNum(16, 48, (uint32_t)(now - k230_last_rx_time), 4, OLED_8X16);
 
         OLED_Update();	  
 	}

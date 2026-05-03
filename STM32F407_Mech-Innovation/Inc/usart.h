@@ -30,8 +30,6 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 
-#include "stdbool.h"
-
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart4;
@@ -39,12 +37,6 @@ extern UART_HandleTypeDef huart4;
 extern UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN Private defines */
-
-#define		CMD_LEN		255
-
-extern __IO bool rxFrameFlag;
-extern __IO uint8_t rxCmd[CMD_LEN];
-extern __IO uint8_t rxCount;
 
 /* USER CODE END Private defines */
 

@@ -39,7 +39,6 @@
 "stm32f407_uart_cmd\bsp_relay.o"
 "stm32f407_uart_cmd\bsp_bluetooth.o"
 "stm32f407_uart_cmd\servo.o"
-"stm32f407_uart_cmd\k230_cmd.o"
 "stm32f407_uart_cmd\mid_button.o"
 "stm32f407_uart_cmd\conveyor_belt.o"
 "stm32f407_uart_cmd\hx711.o"
