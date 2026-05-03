@@ -38,8 +38,6 @@ extern UART_HandleTypeDef huart4;
 
 extern UART_HandleTypeDef huart1;
 
-extern UART_HandleTypeDef huart2;
-
 /* USER CODE BEGIN Private defines */
 
 #define		CMD_LEN		255
@@ -52,7 +50,6 @@ extern __IO uint8_t rxCount;
 
 void MX_UART4_Init(void);
 void MX_USART1_UART_Init(void);
-void MX_USART2_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 

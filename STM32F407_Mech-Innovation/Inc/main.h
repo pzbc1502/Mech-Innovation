@@ -67,10 +67,14 @@ void Error_Handler(void);
 #define RELAY_IN_1_GPIO_Port GPIOA
 #define RELAY_IN_2_Pin GPIO_PIN_6
 #define RELAY_IN_2_GPIO_Port GPIOA
-#define HX711_SCK_Pin GPIO_PIN_10
-#define HX711_SCK_GPIO_Port GPIOB
-#define HX711_DT_Pin GPIO_PIN_11
-#define HX711_DT_GPIO_Port GPIOB
+#define HX711_LEFT_SCK_Pin GPIO_PIN_10
+#define HX711_LEFT_SCK_GPIO_Port GPIOB
+#define HX711_LEFT_DT_Pin GPIO_PIN_11
+#define HX711_LEFT_DT_GPIO_Port GPIOB
+#define HX711_RIGHT_SCK_Pin GPIO_PIN_14
+#define HX711_RIGHT_SCK_GPIO_Port GPIOB
+#define HX711_RIGHT_DT_Pin GPIO_PIN_15
+#define HX711_RIGHT_DT_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

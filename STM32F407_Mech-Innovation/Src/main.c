@@ -130,7 +130,6 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART1_UART_Init();
-  MX_USART2_UART_Init();
   MX_TIM1_Init();
   MX_ADC1_Init();
   MX_UART4_Init();
@@ -227,7 +226,7 @@ int main(void)
 
         App_Conwashing_Task();  // 运行传送带状态机
     }
-
+    
 	
     // --- 任务2：按键扫描 (每30ms执行一次)
     if (now - last_scan_time >= 30)

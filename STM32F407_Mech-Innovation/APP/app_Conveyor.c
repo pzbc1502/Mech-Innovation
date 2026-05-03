@@ -1,25 +1,25 @@
 #include "app_Conveyor.h"
-#include "debug.h" 
+#include "debug.h"
 #include "bsp_bluetooth.h"
 #include "bsp_relay.h"
 #include "HX711.h"
 #include "Servo_Ctrl.h"
+#include "OLED.h"
 
-// 定义全局应用控制句柄
 static App_WashingCtrl_t appCtrl;
 
-// 声明内部辅助函数
 static void App_Enter_AutoState(AutoProcessState_t nextState);
 static bool App_Consume_StateEntry(void);
 static bool App_StateTimeout(uint32_t durationMs);
 static void App_SetActuatorsSafe(void);
 static void App_ResetWeighing(void);
-static bool App_ProcessWeighing(float *weight);
+static bool App_ProcessWeighing(float *totalWeight, float *leftWeight, float *rightWeight);
 static void Run_Auto_Process_FSM(void);
 static void Run_Maintenance_Mode(void);
 
 static void App_Enter_AutoState(AutoProcessState_t nextState)
 {
+    /* 状态计时统一使用 HAL_GetTick() 的真实经过时间，不依赖固定循环累加。 */
     appCtrl.autoState = nextState;
     appCtrl.stateStartTick = HAL_GetTick();
     appCtrl.stateTimer = 0;
@@ -43,6 +43,7 @@ static bool App_StateTimeout(uint32_t durationMs)
 
 static void App_SetActuatorsSafe(void)
 {
+    /* 普通停止、急停、故障恢复都会复用这组安全输出状态。 */
     Set_Relay_Switch(RELAY_PUMP, 0);
     Set_Relay_Switch(RELAY_CUTTER, 0);
     Lower_Layer_Close();
@@ -55,10 +56,15 @@ static void App_ResetWeighing(void)
     appCtrl.weighValidCount = 0;
     appCtrl.weighAttemptCount = 0;
     appCtrl.weighLastSampleTick = 0;
-    appCtrl.weighSum = 0.0f;
+    appCtrl.weighLeftSum = 0.0f;
+    appCtrl.weighRightSum = 0.0f;
+    appCtrl.weighTotalSum = 0.0f;
+    appCtrl.lastWeightLeft = 0.0f;
+    appCtrl.lastWeightRight = 0.0f;
+    appCtrl.lastWeightTotal = 0.0f;
 }
 
-static bool App_ProcessWeighing(float *weight)
+static bool App_ProcessWeighing(float *totalWeight, float *leftWeight, float *rightWeight)
 {
     uint32_t now = HAL_GetTick();
     uint16_t maxAttempts = (uint16_t)(HX711_WEIGHT_SAMPLES * 5U);
@@ -72,28 +78,45 @@ static bool App_ProcessWeighing(float *weight)
     appCtrl.weighLastSampleTick = now;
     appCtrl.weighAttemptCount++;
 
-    if (HX711_DT_READ() == GPIO_PIN_RESET)
+    float left = 0.0f;
+    float right = 0.0f;
+    float total = 0.0f;
+    bool leftValid = false;
+    bool rightValid = false;
+
+    /* 先检查 HX711 是否就绪，避免未接入的称重模块阻塞 10ms 调度。 */
+    if (HX711_IsChannelReady(HX711_CHANNEL_LEFT))
     {
-        uint32_t raw = HX711_Read();
-        if (raw != 0)
-        {
-            hx711.Buffer = raw;
+        left = HX711_GetWeightChannel(HX711_CHANNEL_LEFT);
+        leftValid = HX711_IsChannelValid(HX711_CHANNEL_LEFT);
+    }
 
-            if (raw > hx711.Weight_Maopi)
-            {
-                hx711.Weight_Shiwu = (int32_t)(raw - hx711.Weight_Maopi);
-                hx711.Weight_Real = (float)hx711.Weight_Shiwu / GapValue;
-            }
-            else
-            {
-                hx711.Weight_Shiwu = 0;
-                hx711.Weight_Real = 0.0f;
-            }
+    if (HX711_IsChannelReady(HX711_CHANNEL_RIGHT))
+    {
+        right = HX711_GetWeightChannel(HX711_CHANNEL_RIGHT);
+        rightValid = HX711_IsChannelValid(HX711_CHANNEL_RIGHT);
+    }
 
-            appCtrl.weighSum += hx711.Weight_Real;
-            appCtrl.weighValidCount++;
-            appCtrl.weighSampleCount++;
-        }
+    if (!leftValid)
+    {
+        left = 0.0f;
+    }
+
+    if (!rightValid)
+    {
+        right = 0.0f;
+    }
+
+    total = left + right;
+
+    /* 左右两路谁有效就使用谁；无效或未接入的一侧按 0 处理。 */
+    if (leftValid || rightValid)
+    {
+        appCtrl.weighLeftSum += left;
+        appCtrl.weighRightSum += right;
+        appCtrl.weighTotalSum += total;
+        appCtrl.weighValidCount++;
+        appCtrl.weighSampleCount++;
     }
 
     if ((appCtrl.weighSampleCount < HX711_WEIGHT_SAMPLES) &&
@@ -104,17 +127,30 @@ static bool App_ProcessWeighing(float *weight)
 
     if (appCtrl.weighValidCount > 0)
     {
-        hx711.Weight_Real = appCtrl.weighSum / (float)appCtrl.weighValidCount;
+        appCtrl.lastWeightLeft = appCtrl.weighLeftSum / (float)appCtrl.weighValidCount;
+        appCtrl.lastWeightRight = appCtrl.weighRightSum / (float)appCtrl.weighValidCount;
+        appCtrl.lastWeightTotal = appCtrl.weighTotalSum / (float)appCtrl.weighValidCount;
     }
     else
     {
-        hx711.Weight_Shiwu = 0;
-        hx711.Weight_Real = 0.0f;
+        appCtrl.lastWeightLeft = 0.0f;
+        appCtrl.lastWeightRight = 0.0f;
+        appCtrl.lastWeightTotal = 0.0f;
     }
 
-    if (weight != NULL)
+    hx711.Weight_Real = appCtrl.lastWeightTotal;
+
+    if (totalWeight != NULL)
     {
-        *weight = hx711.Weight_Real;
+        *totalWeight = appCtrl.lastWeightTotal;
+    }
+    if (leftWeight != NULL)
+    {
+        *leftWeight = appCtrl.lastWeightLeft;
+    }
+    if (rightWeight != NULL)
+    {
+        *rightWeight = appCtrl.lastWeightRight;
     }
 
     return true;
@@ -123,52 +159,44 @@ static bool App_ProcessWeighing(float *weight)
 /**
  * @brief 应用层初始化
  */
-void App_Conwashing_Init(void) {
-    // 1. 初始化底层硬件和中间层
+void App_Conwashing_Init(void)
+{
     WashingSystem_Init();
-    
-    // 2. 初始化应用层状态
+
     memset(&appCtrl, 0, sizeof(App_WashingCtrl_t));
     appCtrl.currentMode = MODE_IDLE;
     App_Enter_AutoState(STEP_READY);
     appCtrl.lastTaskTick = HAL_GetTick();
-    
-    // 3. 加载默认参数
-    appCtrl.config.upperSpeed = 60.0f;  // 上层速度
-    appCtrl.config.middleSpeed = 60.0f; // 中间速度
-    appCtrl.config.lowerSpeed = 50.0f;  // 下层速度
-    appCtrl.config.packConveyorSpeed = 100.0f; // 7号电机速度
-    appCtrl.config.packWrapSpeed = 100.0f;     // 8号电机速度
-     
-    appCtrl.config.runDuration = 5000; // 传送带到位时间
-    appCtrl.config.runDuration_Low = 3000; // 下层传送带走3秒到位
-    appCtrl.config.startDelayMs = 500; // 舵机开门后的机械稳定时间
-    appCtrl.config.stopDelayMs = 5000; // 优雅停机排空等待时间
-    appCtrl.config.packMotor7TimeMs = 4000; // 7号电机运行时间
-    appCtrl.config.packMotor8TimeMs = 9000; // 8号电机运行时间
-    appCtrl.config.washTime    = 100; // 冲洗时间
-    appCtrl.config.weighTime   = 1000; // 称重前稳定等待时间
-    appCtrl.config.cutTime     = 200; // 切刀动作时间
-    appCtrl.config.servoTime   = 200; // 切刀动作1秒
-    appCtrl.config.cycleDelayMs = 600; // 下一轮进料前等待时间
 
+    appCtrl.config.upperSpeed = 60.0f;
+    appCtrl.config.middleSpeed = 60.0f;
+    appCtrl.config.lowerScrewSpeed = 30.0f;
+    appCtrl.config.packMotorSpeed = 30.0f;
 
-    // 调试打印
-    #ifdef DEBUG_ENABLE
+    appCtrl.config.runDuration = 5000;
+    appCtrl.config.startDelayMs = 500;
+    appCtrl.config.stopDelayMs = 5000;
+    appCtrl.config.washTime = 100;
+    appCtrl.config.weighTime = 1000;
+    appCtrl.config.cutTime = 200;
+    appCtrl.config.servoTime = 200;
+    /* 30RPM、8mm 导程、300mm 行程约 75s，80s 留少量余量。 */
+    appCtrl.config.lowerPushTimeoutMs = 80000;
+    appCtrl.config.packTailTimeMs = 3000;
+    appCtrl.config.lowerReturnTimeoutMs = 80000;
+    appCtrl.config.cycleDelayMs = 600;
+
+#ifdef DEBUG_ENABLE
     printf("[APP] Washing System Initialized\r\n");
-    #endif
+#endif
     Bluetooth_SendString("[APP] Washing System Initialized\r\n");
 }
 
-
 /**
- * @brief 应用层主任务，处理状态机
- * @note  建议每10ms调用一次
- * @note  在主函数的while循环里调用
+ * @brief 应用层主任务，建议每10ms调用一次
  */
-void App_Conwashing_Task(void) 
+void App_Conwashing_Task(void)
 {
-    // 状态机计时器累加 (调用周期)
     uint32_t now = HAL_GetTick();
     uint32_t delta = 0;
 
@@ -183,27 +211,25 @@ void App_Conwashing_Task(void)
     {
         appCtrl.runTime += delta;
     }
-      
-    // 1. 紧急停止高优先级检查
-    if (g_washingSystem.emergencyStop) 
-		{
-        if (appCtrl.currentMode != MODE_ERROR) 
-				{
+
+    /* 底层急停标志优先级最高，不受当前应用模式影响。 */
+    if (g_washingSystem.emergencyStop)
+    {
+        if (appCtrl.currentMode != MODE_ERROR)
+        {
             appCtrl.currentMode = MODE_ERROR;
             App_SetActuatorsSafe();
-            #ifdef DEBUG_ENABLE
+#ifdef DEBUG_ENABLE
             printf("[APP] EMERGENCY STOP TRIGGERED!\r\n");
-            #endif
-						Bluetooth_SendString("[APP] EMERGENCY STOP TRIGGERED!\r\n");
+#endif
+            Bluetooth_SendString("[APP] EMERGENCY STOP TRIGGERED!\r\n");
         }
-        return; // 急停状态下不执行其他逻辑
+        return;
     }
 
-    // 2. 主状态机
-    switch (appCtrl.currentMode) 
-	{
+    switch (appCtrl.currentMode)
+    {
         case MODE_IDLE:
-            // 空闲状态，什么都不做，等待 Start 指令
             break;
 
         case MODE_AUTO_CLEAN:
@@ -215,313 +241,268 @@ void App_Conwashing_Task(void)
             break;
 
         case MODE_ERROR:
-            // 错误状态等待 Resume 指令
             break;
-            
+
         default:
             break;
     }
 }
 
 /**
- * @brief 自动清洗流程的状态机 (核心逻辑)
+ * @brief 第三代自动清洗流程状态机
  */
-static void Run_Auto_Process_FSM(void) {
-    if (appCtrl.isPaused) return;
+static void Run_Auto_Process_FSM(void)
+{
+    if (appCtrl.isPaused)
+    {
+        return;
+    }
 
-    switch (appCtrl.autoState) {
-        // --- 启动阶段 (顺序：上->中->下) ---
+    switch (appCtrl.autoState)
+    {
         case STEP_READY:
-			
-//			Set_Relay_Switch(RELAY_CUTTER, 0); // 刀抬起
-//            Set_Relay_Switch(RELAY_PUMP, 0);   // 泵关闭
+            /* 每轮自动流程都先把第三层恢复到明确的安全状态。 */
             App_SetActuatorsSafe();
+            StopLowerScrew();
+            StopPackMotor();
             App_Enter_AutoState(STEP_UPPER_RUN);
-            #ifdef DEBUG_ENABLE
+#ifdef DEBUG_ENABLE
             printf("[APP] Auto Process Start...\r\n");
-            #endif
-			Bluetooth_SendString("[APP] Auto Process Start...\r\n");
+#endif
+            Bluetooth_SendString("[APP] Auto Process Start...\r\n");
             break;
-		
-		
-		// ==========================================
-        // 第一阶段：上层 (清洗)
-        // ==========================================
-					
-        case STEP_UPPER_RUN: // 
-            
-            // 1. 刚进入状态：同时启动传送带和水泵
-            if (App_Consume_StateEntry()) {
-                // 启动传送带
+
+        case STEP_UPPER_RUN:
+            if (App_Consume_StateEntry())
+            {
                 StartConveyorBelt(LAYER_UPPER, appCtrl.config.upperSpeed);
-                // 启动水泵
-                Set_Relay_Switch(RELAY_PUMP, 1); 
-                
-                #ifdef DEBUG_ENABLE
+                Set_Relay_Switch(RELAY_PUMP, 1);
+#ifdef DEBUG_ENABLE
                 printf("[APP] Upper Process: Belt Running & Pump ON\r\n");
-                #endif
+#endif
                 Bluetooth_SendString("[APP] Washing Start...\r\n");
             }
-            
-            // 2. 运行指定时间 (清洗时间 = 运行时间)
-            // 这里使用 runDuration 作为总时间，washTime 参数可以不用了，或者取两者的最大值
-            if (App_StateTimeout(appCtrl.config.runDuration)) {
-                // 3. 时间到：同时停止
+
+            if (App_StateTimeout(appCtrl.config.runDuration))
+            {
                 StopConveyorBelt(LAYER_UPPER);
-                Set_Relay_Switch(RELAY_PUMP, 0); // 关水泵
-                
-                #ifdef DEBUG_ENABLE
+                Set_Relay_Switch(RELAY_PUMP, 0);
+#ifdef DEBUG_ENABLE
                 printf("[APP] Upper Process Done.\r\n");
-                #endif
+#endif
                 Bluetooth_SendString("[APP] Washing Done.\r\n");
-                
-                // 4. 跳转到下一阶段 (中层)
                 App_Enter_AutoState(STEP_MIDDLE_RUN);
             }
-            break;		
-										
-        // ==========================================
-        // 第二阶段：中层 (切割)
-        // ==========================================
+            break;
 
-            
-        case STEP_MIDDLE_RUN: // 这里合并了运行和切割
-            
-            // 1. 刚进入：同时启动传送带和切刀
-            if (App_Consume_StateEntry()) {
-                // 启动传送带
+        case STEP_MIDDLE_RUN:
+            if (App_Consume_StateEntry())
+            {
                 StartConveyorBelt(LAYER_MIDDLE, appCtrl.config.middleSpeed);
-				Lower_Layer_Open();
-                #ifdef DEBUG_ENABLE
+                Lower_Layer_Open();
+#ifdef DEBUG_ENABLE
                 printf("[APP] Middle Process: Belt Running\r\n");
-                #endif
+#endif
                 Bluetooth_SendString("[APP] Middle Belt Running...\r\n");
             }
-            if (App_StateTimeout(appCtrl.config.startDelayMs)) {
+
+            if (App_StateTimeout(appCtrl.config.startDelayMs))
+            {
                 App_Enter_AutoState(STEP_MIDDLE_CUTTING);
             }
             break;
 
         case STEP_MIDDLE_CUTTING:
-            if (App_Consume_StateEntry()) {
+            if (App_Consume_StateEntry())
+            {
                 Set_Relay_Switch(RELAY_CUTTER, 1);
-
-                #ifdef DEBUG_ENABLE
+#ifdef DEBUG_ENABLE
                 printf("[APP] Middle Process: Cutter ON\r\n");
-                #endif
+#endif
                 Bluetooth_SendString("[APP] Cutting Start...\r\n");
             }
 
-            if (App_StateTimeout(appCtrl.config.runDuration)) {
-                // 3. 时间到：同时停止
+            if (App_StateTimeout(appCtrl.config.runDuration))
+            {
                 StopConveyorBelt(LAYER_MIDDLE);
-                Set_Relay_Switch(RELAY_CUTTER, 0); // 抬刀/停止切割
+                Set_Relay_Switch(RELAY_CUTTER, 0);
                 Lower_Layer_Close();
-                #ifdef DEBUG_ENABLE 
+#ifdef DEBUG_ENABLE
                 printf("[APP] Middle Process Done.\r\n");
-                #endif
+#endif
                 Bluetooth_SendString("[APP] Cutting Done.\r\n");
-                
-                // 4. 跳转到下一阶段 (下层)
-                App_Enter_AutoState(STEP_LOWER_RUN_1);
-            }
-            break;
-
-        // ==========================================
-        // 第三阶段：下层 (称重)
-        // ==========================================
-		
-		// 1. 启动最下层
-        case STEP_LOWER_RUN_1:
-			
-            if (App_Consume_StateEntry()) {
-                StartConveyorBelt(LAYER_LOWER, appCtrl.config.lowerSpeed);
-                #ifdef DEBUG_ENABLE
-                printf("[APP] Lower Belt Running action 1...\r\n");
-                #endif
-				Bluetooth_SendString("[APP] Lower Belt Running action 1...\r\n");
-            }
-            // 2. 运行指定时间到位
-            if (App_StateTimeout(appCtrl.config.runDuration_Low)) {
-                StopConveyorBelt(LAYER_LOWER);
                 App_Enter_AutoState(STEP_LOWER_WEIGH);
             }
             break;
-			
-		// 2. 称重
+
         case STEP_LOWER_WEIGH:
-            if (App_Consume_StateEntry()) {
+            if (App_Consume_StateEntry())
+            {
+                /* 称重板稳定期间，5/6 推板和 7 号打包电机必须保持停止。 */
+                StopLowerScrew();
+                StopPackMotor();
                 App_ResetWeighing();
+                Bluetooth_SendString("[APP] Weighing Start...\r\n");
             }
 
-            if (App_StateTimeout(appCtrl.config.weighTime)) {
-                float weight = 0.0f;
+            if (App_StateTimeout(appCtrl.config.weighTime))
+            {
+                float total = 0.0f;
+                float left = 0.0f;
+                float right = 0.0f;
 
-                if (App_ProcessWeighing(&weight)) {
-                    #ifdef DEBUG_ENABLE
-                    printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
-                    #endif
-                    Bluetooth_Printf("[APP] Weighing Done. Result: %.2f g\r\n", weight);
+                if (App_ProcessWeighing(&total, &left, &right))
+                {
+#ifdef DEBUG_ENABLE
+                    printf("[APP] Weighing Done. L: %.2f g R: %.2f g Total: %.2f g\r\n", left, right, total);
+#endif
+                    Bluetooth_Printf("[APP] Weighing Done. L: %.2f g R: %.2f g Total: %.2f g\r\n", left, right, total);
 
-                    OLED_ShowString(0, 48, "weight:", OLED_8X16);
-                    OLED_ShowNum(60, 48, weight, 4,OLED_8X16);
-                    // 称重完成，进入下一层
-                    App_Enter_AutoState(STEP_LOWER_RUN_2);
+                    OLED_ShowString(0, 48, "W:", OLED_8X16);
+                    OLED_ShowNum(16, 48, (uint32_t)total, 5, OLED_8X16);
+                    OLED_Update();
+
+                    App_Enter_AutoState(STEP_LOWER_PUSH_AND_PACK);
                 }
             }
-            break;			
- 
-        case STEP_LOWER_RUN_2:
-		
-            if (App_Consume_StateEntry()) {
-                StartConveyorBelt(LAYER_LOWER, appCtrl.config.lowerSpeed);
-                #ifdef DEBUG_ENABLE
-                printf("[APP] Lower Belt Running action 2...\r\n");
-                #endif
-				Bluetooth_SendString("[APP] Lower Belt Running action 2...\r\n");
-            }
-            // 2. 运行指定时间到位
-            if (App_StateTimeout(appCtrl.config.runDuration_Low)) {
-                StopConveyorBelt(LAYER_LOWER);
-                App_Enter_AutoState(STEP_PACKING);
-            }
-            break;			
+            break;
 
-        case STEP_PACKING:
-            if (App_Consume_StateEntry()) {
-                StartPackConveyor(appCtrl.config.packConveyorSpeed);
-                #ifdef DEBUG_ENABLE
-                printf("[APP] Packing Start: Motor7 Running...\r\n");
-                #endif
-                Bluetooth_SendString("[APP] Packing Start: Motor7 Running...\r\n");
+        case STEP_LOWER_PUSH_AND_PACK:
+            if (App_Consume_StateEntry())
+            {
+                /* 5/6 号位置模式推板和 7 号打包电机通过同一次 CAN 同步广播启动。 */
+                StartLowerPushAndPack(appCtrl.config.lowerScrewSpeed, appCtrl.config.packMotorSpeed);
+#ifdef DEBUG_ENABLE
+                printf("[APP] Lower Push and Pack Start.\r\n");
+#endif
+                Bluetooth_SendString("[APP] Lower Push and Pack Start.\r\n");
             }
 
-            if (App_StateTimeout(appCtrl.config.packMotor7TimeMs)) {
-                StopPackConveyor();
-                App_Enter_AutoState(STEP_PACK_WRAP);
+            if (App_StateTimeout(appCtrl.config.lowerPushTimeoutMs))
+            {
+                StopLowerScrew();
+                App_Enter_AutoState(STEP_PACK_TAIL);
             }
             break;
 
-        case STEP_PACK_WRAP:
-            if (App_Consume_StateEntry()) {
-                StartWrapMotor(appCtrl.config.packWrapSpeed);
-                #ifdef DEBUG_ENABLE
-                printf("[APP] Packing Continue: Motor8 Running...\r\n");
-                #endif
-                Bluetooth_SendString("[APP] Packing Continue: Motor8 Running...\r\n");
+        case STEP_PACK_TAIL:
+            if (App_Consume_StateEntry())
+            {
+                /* 推板到达估算终点后，7 号电机继续短时间旋转完成打包收尾。 */
+                Bluetooth_SendString("[APP] Pack Tail Running...\r\n");
             }
 
-            if (App_StateTimeout(appCtrl.config.packMotor8TimeMs)) {
-                StopWrapMotor();
-                App_Enter_AutoState(STEP_LOWER_RUN_SERVO);
+            if (App_StateTimeout(appCtrl.config.packTailTimeMs))
+            {
+                StopPackMotor();
+                App_Enter_AutoState(STEP_LOWER_RETURN);
             }
             break;
 
-        case STEP_LOWER_RUN_SERVO:
-			
-            if (App_Consume_StateEntry()) {
-				Middle_Layer_Open();
-				#ifdef DEBUG_ENABLE
-                printf("[APP] Lower Belt SERVO...\r\n");
-                #endif
-				Bluetooth_SendString("[APP] Lower Belt SERVO...\r\n");
+        case STEP_LOWER_RETURN:
+            if (App_Consume_StateEntry())
+            {
+                /* v1 暂无线位开关和 CAN 到位解析，返回完成按时间估算。 */
+                StartLowerReturn(appCtrl.config.lowerScrewSpeed);
+#ifdef DEBUG_ENABLE
+                printf("[APP] Lower Screw Return Start.\r\n");
+#endif
+                Bluetooth_SendString("[APP] Lower Screw Return Start.\r\n");
             }
-            // 2. 运行指定时间到位
-            if (App_StateTimeout(appCtrl.config.servoTime)) {
-				Middle_Layer_Close();
-                App_Enter_AutoState(STEP_RUNNING);
-            }
-            break;
-			
-        // --- 稳定运行阶段 ---
-        case STEP_RUNNING:
-            if (App_Consume_StateEntry()) {
-                #ifdef DEBUG_ENABLE
-                printf("[APP] STEP_RUNNING.\r\n");
-                #endif
+
+            if (App_StateTimeout(appCtrl.config.lowerReturnTimeoutMs))
+            {
+                StopLowerScrew();
                 App_Enter_AutoState(STEP_WAIT_NEXT_CYCLE);
             }
             break;
 
         case STEP_WAIT_NEXT_CYCLE:
-            if (App_StateTimeout(appCtrl.config.cycleDelayMs)) {
+            if (App_StateTimeout(appCtrl.config.cycleDelayMs))
+            {
                 App_Enter_AutoState(STEP_UPPER_RUN);
             }
             break;
-            
-        // --- 停机阶段 (逆序：上->中->下) ---
-        // 接收到 Stop 指令后会跳转到这里
-        
+
         case STEP_STOP_UPPER:
-            if (App_Consume_StateEntry()) {
-            #ifdef DEBUG_ENABLE
-            printf("[APP] Stopping Sequence: Stop Upper\r\n");
-            #endif
+            if (App_Consume_StateEntry())
+            {
+#ifdef DEBUG_ENABLE
+                printf("[APP] Stopping Sequence: Stop Upper\r\n");
+#endif
                 StopConveyorBelt(LAYER_UPPER);
                 Set_Relay_Switch(RELAY_PUMP, 0);
                 App_Enter_AutoState(STEP_WAIT_EMPTY_1);
             }
             break;
-            
+
         case STEP_WAIT_EMPTY_1:
-            // 等待中层的货物洗完
-            if (App_StateTimeout(appCtrl.config.stopDelayMs)) {
+            /* 先等待已进入中层的物料继续处理，再停止切割层。 */
+            if (App_StateTimeout(appCtrl.config.stopDelayMs))
+            {
                 App_Enter_AutoState(STEP_STOP_MIDDLE);
             }
             break;
-            
+
         case STEP_STOP_MIDDLE:
-            if (App_Consume_StateEntry()) {
-            #ifdef DEBUG_ENABLE
-            printf("[APP] Stopping Sequence: Stop Middle\r\n");
-            #endif
+            if (App_Consume_StateEntry())
+            {
+#ifdef DEBUG_ENABLE
+                printf("[APP] Stopping Sequence: Stop Middle\r\n");
+#endif
                 StopConveyorBelt(LAYER_MIDDLE);
                 Set_Relay_Switch(RELAY_CUTTER, 0);
                 Lower_Layer_Close();
                 App_Enter_AutoState(STEP_WAIT_EMPTY_2);
             }
             break;
-            
+
         case STEP_WAIT_EMPTY_2:
-             // 等待下层把最后一点货送出去
-            if (App_StateTimeout(appCtrl.config.stopDelayMs)) {
+            /* 最后停止第三层前，给当前动作留出到达安全点的时间。 */
+            if (App_StateTimeout(appCtrl.config.stopDelayMs))
+            {
                 App_Enter_AutoState(STEP_STOP_LOWER);
             }
             break;
-            
+
         case STEP_STOP_LOWER:
-            if (App_Consume_StateEntry()) {
-            #ifdef DEBUG_ENABLE
-            printf("[APP] Stopping Sequence: Stop Lower.\r\n");
-            #endif
-                StopConveyorBelt(LAYER_LOWER);
-                StopPackConveyor();
-                StopWrapMotor();
+            if (App_Consume_StateEntry())
+            {
+#ifdef DEBUG_ENABLE
+                printf("[APP] Stopping Sequence: Stop Lower.\r\n");
+#endif
+                StopLowerScrew();
+                StopPackMotor();
                 App_SetActuatorsSafe();
                 App_Enter_AutoState(STEP_DONE);
             }
             break;
-            
+
         case STEP_DONE:
             App_SetActuatorsSafe();
-            appCtrl.currentMode = MODE_IDLE; // 回到空闲模式
+            StopLowerScrew();
+            StopPackMotor();
+            appCtrl.currentMode = MODE_IDLE;
+            App_Enter_AutoState(STEP_READY);
+            break;
+
+        default:
             App_Enter_AutoState(STEP_READY);
             break;
     }
 }
 
 /**
- * @brief 维护模式逻辑 (手动控制预留)
+ * @brief 维护模式逻辑
  */
-static void Run_Maintenance_Mode(void) {
-    // 维护模式通常由特定的调试指令控制，这里暂空
+static void Run_Maintenance_Mode(void)
+{
 }
 
-// --- 控制指令接口 ---
-void App_Send_Cmd_StartAuto(void) 
+void App_Send_Cmd_StartAuto(void)
 {
-    if (appCtrl.currentMode == MODE_IDLE) 
-	{	
+    if (appCtrl.currentMode == MODE_IDLE)
+    {
         appCtrl.currentMode = MODE_AUTO_CLEAN;
         appCtrl.isPaused = false;
         appCtrl.runTime = 0;
@@ -530,20 +511,17 @@ void App_Send_Cmd_StartAuto(void)
     }
 }
 
-void App_Send_Cmd_Stop(void) 
+void App_Send_Cmd_Stop(void)
 {
-    // 只有在自动运行模式下，才触发优雅停机序列
-    if (appCtrl.currentMode == MODE_AUTO_CLEAN) 
-	{
-        // 如果正在运行，跳转到停机序列的第一步
+    if (appCtrl.currentMode == MODE_AUTO_CLEAN)
+    {
         if (appCtrl.autoState < STEP_STOP_UPPER)
-		{
+        {
             App_Enter_AutoState(STEP_STOP_UPPER);
         }
-    } 
-	else 
-	{
-        // 其他模式下直接强停
+    }
+    else
+    {
         StopWashingSystem();
         App_SetActuatorsSafe();
         appCtrl.currentMode = MODE_IDLE;
@@ -551,26 +529,29 @@ void App_Send_Cmd_Stop(void)
     }
 }
 
-void App_Send_Cmd_Emergency(void) {
-    EmergencyStopAll(); // Middle层提供的硬件急停
+void App_Send_Cmd_Emergency(void)
+{
+    EmergencyStopAll();
     App_SetActuatorsSafe();
     appCtrl.currentMode = MODE_ERROR;
 }
 
-void App_Send_Cmd_Resume(void) {
-    if (appCtrl.currentMode == MODE_ERROR) {
-        ResetEmergencyStop(); // 解除硬件保护
+void App_Send_Cmd_Resume(void)
+{
+    if (appCtrl.currentMode == MODE_ERROR)
+    {
+        ResetEmergencyStop();
         App_SetActuatorsSafe();
         appCtrl.currentMode = MODE_IDLE;
         App_Enter_AutoState(STEP_READY);
-        #ifdef DEBUG_ENABLE
+#ifdef DEBUG_ENABLE
         printf("[APP] Error Resumed.\r\n");
-		Bluetooth_SendString("[APP] Error Resumed.\r\n");
-        #endif
+        Bluetooth_SendString("[APP] Error Resumed.\r\n");
+#endif
     }
 }
 
-SystemMode_t App_Get_CurrentMode(void) {
+SystemMode_t App_Get_CurrentMode(void)
+{
     return appCtrl.currentMode;
 }
-

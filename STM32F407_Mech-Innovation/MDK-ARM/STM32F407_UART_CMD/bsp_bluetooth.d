@@ -42,6 +42,7 @@ stm32f407_uart_cmd\bsp_bluetooth.o: ../Inc/main.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/bsp_bluetooth.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/bsp_relay.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../Middle/HX711.h
+stm32f407_uart_cmd\bsp_bluetooth.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/OLED.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/OLED_Data.h
 stm32f407_uart_cmd\bsp_bluetooth.o: ../USER_cord/servo.h

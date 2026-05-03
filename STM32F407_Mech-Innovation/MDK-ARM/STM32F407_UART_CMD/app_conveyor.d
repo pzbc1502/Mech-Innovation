@@ -44,11 +44,11 @@ stm32f407_uart_cmd\app_conveyor.o: C:\Users\Administrator\AppData\Local\Keil_v5\
 stm32f407_uart_cmd\app_conveyor.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 stm32f407_uart_cmd\app_conveyor.o: ../USER_cord/bsp_relay.h
 stm32f407_uart_cmd\app_conveyor.o: ../Middle/HX711.h
+stm32f407_uart_cmd\app_conveyor.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32f407_uart_cmd\app_conveyor.o: ../USER_cord/OLED.h
 stm32f407_uart_cmd\app_conveyor.o: ../USER_cord/OLED_Data.h
 stm32f407_uart_cmd\app_conveyor.o: ../USER_cord/servo.h
 stm32f407_uart_cmd\app_conveyor.o: ../Middle/Conveyor_belt.h
 stm32f407_uart_cmd\app_conveyor.o: ../USER_cord/Emm_V5.h
 stm32f407_uart_cmd\app_conveyor.o: ../Inc/can.h
-stm32f407_uart_cmd\app_conveyor.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32f407_uart_cmd\app_conveyor.o: ../Middle/Servo_Ctrl.h

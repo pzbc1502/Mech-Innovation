@@ -47,4 +47,5 @@ stm32f407_uart_cmd\hx711.o: ../Middle/HX711.h
 stm32f407_uart_cmd\hx711.o: ../USER_cord/OLED.h
 stm32f407_uart_cmd\hx711.o: ../USER_cord/OLED_Data.h
 stm32f407_uart_cmd\hx711.o: ../USER_cord/servo.h
+stm32f407_uart_cmd\hx711.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32f407_uart_cmd\hx711.o: ../USER_cord/delay_us.h

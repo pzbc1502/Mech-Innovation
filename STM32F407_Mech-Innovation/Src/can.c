@@ -1,11 +1,22 @@
+/* USER CODE BEGIN Header */
 /**
   ******************************************************************************
-  * File Name          : CAN.c
-  * Description        : This file provides code for the configuration
-  *                      of the CAN instances.
+  * @file    can.c
+  * @brief   This file provides code for the configuration
+  *          of the CAN instances.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
   ******************************************************************************
   */
-
+/* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "can.h"
 
@@ -21,6 +32,14 @@ CAN_HandleTypeDef hcan2;
 /* CAN2 init function */
 void MX_CAN2_Init(void)
 {
+
+  /* USER CODE BEGIN CAN2_Init 0 */
+
+  /* USER CODE END CAN2_Init 0 */
+
+  /* USER CODE BEGIN CAN2_Init 1 */
+
+  /* USER CODE END CAN2_Init 1 */
   hcan2.Instance = CAN2;
   hcan2.Init.Prescaler = 14;
   hcan2.Init.Mode = CAN_MODE_NORMAL;
@@ -37,20 +56,24 @@ void MX_CAN2_Init(void)
   {
     Error_Handler();
   }
+  /* USER CODE BEGIN CAN2_Init 2 */
+
+  /* USER CODE END CAN2_Init 2 */
+
 }
 
 void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
 {
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   if(canHandle->Instance==CAN2)
   {
-    /*
-     * CAN2 is a slave CAN peripheral on STM32F4, so CAN1 clock must also be
-     * enabled even though the bus is physically on CAN2 PB12/PB13.
-     */
-    __HAL_RCC_CAN1_CLK_ENABLE();
+  /* USER CODE BEGIN CAN2_MspInit 0 */
+
+  /* USER CODE END CAN2_MspInit 0 */
+    /* CAN2 clock enable */
     __HAL_RCC_CAN2_CLK_ENABLE();
+    __HAL_RCC_CAN1_CLK_ENABLE();
 
     __HAL_RCC_GPIOB_CLK_ENABLE();
     /**CAN2 GPIO Configuration
@@ -67,13 +90,21 @@ void HAL_CAN_MspInit(CAN_HandleTypeDef* canHandle)
     /* CAN2 interrupt Init */
     HAL_NVIC_SetPriority(CAN2_RX0_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(CAN2_RX0_IRQn);
+  /* USER CODE BEGIN CAN2_MspInit 1 */
+
+  /* USER CODE END CAN2_MspInit 1 */
   }
 }
 
 void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 {
+
   if(canHandle->Instance==CAN2)
   {
+  /* USER CODE BEGIN CAN2_MspDeInit 0 */
+
+  /* USER CODE END CAN2_MspDeInit 0 */
+    /* Peripheral clock disable */
     __HAL_RCC_CAN2_CLK_DISABLE();
     __HAL_RCC_CAN1_CLK_DISABLE();
 
@@ -85,6 +116,9 @@ void HAL_CAN_MspDeInit(CAN_HandleTypeDef* canHandle)
 
     /* CAN2 interrupt Deinit */
     HAL_NVIC_DisableIRQ(CAN2_RX0_IRQn);
+  /* USER CODE BEGIN CAN2_MspDeInit 1 */
+
+  /* USER CODE END CAN2_MspDeInit 1 */
   }
 }
 

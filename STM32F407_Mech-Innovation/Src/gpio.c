@@ -38,6 +38,8 @@
         * Output
         * EVENT_OUT
         * EXTI
+     PB8   ------> I2C1_SCL
+     PB9   ------> I2C1_SDA
 */
 void MX_GPIO_Init(void)
 {
@@ -56,7 +58,7 @@ void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, RELAY_IN_1_Pin|RELAY_IN_2_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(HX711_SCK_GPIO_Port, HX711_SCK_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, HX711_LEFT_SCK_Pin|HX711_RIGHT_SCK_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pins : RELAY_IN_1_Pin RELAY_IN_2_Pin */
   GPIO_InitStruct.Pin = RELAY_IN_1_Pin|RELAY_IN_2_Pin;
@@ -65,24 +67,32 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : HX711_SCK_Pin */
-  GPIO_InitStruct.Pin = HX711_SCK_Pin;
+  /*Configure GPIO pins : HX711_LEFT_SCK_Pin HX711_RIGHT_SCK_Pin */
+  GPIO_InitStruct.Pin = HX711_LEFT_SCK_Pin|HX711_RIGHT_SCK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(HX711_SCK_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : HX711_DT_Pin */
-  GPIO_InitStruct.Pin = HX711_DT_Pin;
+  /*Configure GPIO pins : HX711_LEFT_DT_Pin HX711_RIGHT_DT_Pin */
+  GPIO_InitStruct.Pin = HX711_LEFT_DT_Pin|HX711_RIGHT_DT_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(HX711_DT_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
   /*Configure GPIO pins : PD4 PD5 PD6 PD7 */
   GPIO_InitStruct.Pin = GPIO_PIN_4|GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : PB8 PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_8|GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF4_I2C1;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 

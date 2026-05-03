@@ -43,12 +43,12 @@ stm32f407_uart_cmd\main.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMC
 stm32f407_uart_cmd\main.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 stm32f407_uart_cmd\main.o: ../USER_cord/bsp_relay.h
 stm32f407_uart_cmd\main.o: ../Middle/HX711.h
+stm32f407_uart_cmd\main.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32f407_uart_cmd\main.o: ../USER_cord/OLED.h
 stm32f407_uart_cmd\main.o: ../USER_cord/OLED_Data.h
 stm32f407_uart_cmd\main.o: ../USER_cord/servo.h
 stm32f407_uart_cmd\main.o: ../Inc/adc.h
 stm32f407_uart_cmd\main.o: ../Inc/can.h
-stm32f407_uart_cmd\main.o: C:\Users\Administrator\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdbool.h
 stm32f407_uart_cmd\main.o: ../Inc/dma.h
 stm32f407_uart_cmd\main.o: ../Inc/tim.h
 stm32f407_uart_cmd\main.o: ../Inc/usart.h
