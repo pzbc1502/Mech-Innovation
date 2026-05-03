@@ -5,17 +5,16 @@ static ServoConfig_t s_servo_cfg = {
     .min_pulse_us = 500,
     .max_pulse_us = 2500,
     .center_pulse_us = 1500,
+    .max_angle_deg = 180,
 };
 
 void Servo_Init(void)
 {
     HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
     __HAL_TIM_MOE_ENABLE(&htim1);
 
     Servo_SetPulse(SERVO_CH1, s_servo_cfg.center_pulse_us);
-    Servo_SetPulse(SERVO_CH2, s_servo_cfg.center_pulse_us);
 }
 
 void Servo_SetAngle(ServoChannel_t ch, float angle)
@@ -26,13 +25,13 @@ void Servo_SetAngle(ServoChannel_t ch, float angle)
     {
         angle = 0.0f;
     }
-    if (angle > 270.0f)
+    if (angle > (float)s_servo_cfg.max_angle_deg)
     {
-        angle = 270.0f;
+        angle = (float)s_servo_cfg.max_angle_deg;
     }
 
     pulse_us = s_servo_cfg.min_pulse_us +
-        (uint16_t)((angle / 270.0f) * (s_servo_cfg.max_pulse_us - s_servo_cfg.min_pulse_us));
+        (uint16_t)((angle / (float)s_servo_cfg.max_angle_deg) * (s_servo_cfg.max_pulse_us - s_servo_cfg.min_pulse_us));
 
     Servo_SetPulse(ch, pulse_us);
 }
@@ -42,13 +41,13 @@ void Servo_SetAngleInt(ServoChannel_t ch, uint16_t angle)
     uint32_t range;
     uint16_t pulse_us;
 
-    if (angle > 270)
+    if (angle > s_servo_cfg.max_angle_deg)
     {
-        angle = 270;
+        angle = s_servo_cfg.max_angle_deg;
     }
 
     range = s_servo_cfg.max_pulse_us - s_servo_cfg.min_pulse_us;
-    pulse_us = s_servo_cfg.min_pulse_us + (uint16_t)((angle * range) / 270);
+    pulse_us = s_servo_cfg.min_pulse_us + (uint16_t)((angle * range) / s_servo_cfg.max_angle_deg);
 
     Servo_SetPulse(ch, pulse_us);
 }

@@ -49,7 +49,7 @@ static void App_SetActuatorsSafe(void)
     /* 普通停止、急停、故障恢复都会复用这组安全输出状态。 */
     Set_Relay_Switch(RELAY_PUMP, 0);
     Set_Relay_Switch(RELAY_CUTTER, 0);
-    Lower_Layer_Close();
+    Pack_Cutter_Retract();
 }
 
 static void App_ResetWeighing(void)
@@ -174,23 +174,40 @@ void App_Conwashing_Init(void)
     App_Enter_AutoState(STEP_READY);
     appCtrl.lastTaskTick = HAL_GetTick();
 
+    /* 上层 1/2 号传送带电机速度，单位 RPM。 */
     appCtrl.config.upperSpeed = 60.0f;
+    /* 中层 3/4 号传送带电机速度，单位 RPM。 */
     appCtrl.config.middleSpeed = 60.0f;
-    appCtrl.config.lowerScrewSpeed = 30.0f;
+    /* 第三层 5/6 号丝杆推板速度，位置模式推动和返回都使用该速度。 */
+    appCtrl.config.lowerScrewSpeed = 150.0f;
+    /* 7 号旋转打包电机速度，推板推动时同步启动。 */
     appCtrl.config.packMotorSpeed = 30.0f;
 
-    appCtrl.config.runDuration = 5000;
+    /* 上层清洗运行时间：只影响 1/2 号上层传送带和水泵。 */
+    appCtrl.config.upperRunDuration = 5500;
+    /* 中层切割运行时间：只影响 3/4 号中层传送带和切刀。 */
+    appCtrl.config.middleRunDuration = 5500;
+
+    /* 中层传送带启动后，等待物料进入切割区域的延时。 */
     appCtrl.config.startDelayMs = 500;
+    /* 优雅停机排空等待时间：先停上层，再等中层和第三层完成当前动作。 */
     appCtrl.config.stopDelayMs = 5000;
-    appCtrl.config.washTime = 200;
-    appCtrl.config.weighTime = 1000;
+    /* 预留清洗动作时间参数，当前主流程暂未单独使用。 */
+    appCtrl.config.washTime = 2000;
+    /* 进入称重状态后先等待物料稳定，再开始读取 HX711。 */
+    appCtrl.config.weighTime = 1500;
+    /* 预留切刀动作时间参数，当前切刀随中层切割阶段开关。 */
     appCtrl.config.cutTime = 200;
+    /* 预留舵机动作时间参数，当前打包切断由 packTailTimeMs 控制。 */
     appCtrl.config.servoTime = 200;
-    /* 当前 v1 不解析 CAN 到位反馈，推板推动/返回按时间估算完成。 */
-    /* 30RPM、8mm 导程、300mm 行程约 75s，80s 留少量余量。 */
-    appCtrl.config.lowerPushTimeoutMs = 80000;
-    appCtrl.config.packTailTimeMs = 3000;
-    appCtrl.config.lowerReturnTimeoutMs = 80000;
+    /* 当前 v1 不解析 CAN 到位反馈，推板推动按时间估算完成。 */
+    /* 30RPM、8mm 导程、300mm 行程约 75s，10s, 留少量余量。 */
+    appCtrl.config.lowerPushTimeoutMs = 15000;
+    /* 推板到位后，7 号打包电机继续旋转收尾的时间。 */
+    appCtrl.config.packTailTimeMs = 1000;
+    /* 当前 v1 不依赖限位开关，推板返回同样按时间估算完成。 */
+    appCtrl.config.lowerReturnTimeoutMs = 15000;
+    /* 一轮完整流程结束后，进入下一轮前的短等待。 */
     appCtrl.config.cycleDelayMs = 600;
 
 #ifdef DEBUG_ENABLE
@@ -293,7 +310,7 @@ static void Run_Auto_Process_FSM(void)
                 Bluetooth_SendString("[APP] Washing Start...\r\n");
             }
 
-            if (App_StateTimeout(appCtrl.config.runDuration))
+            if (App_StateTimeout(appCtrl.config.upperRunDuration))
             {
                 StopConveyorBelt(LAYER_UPPER);
                 Set_Relay_Switch(RELAY_PUMP, 0);
@@ -308,9 +325,8 @@ static void Run_Auto_Process_FSM(void)
         case STEP_MIDDLE_RUN:
             if (App_Consume_StateEntry())
             {
-                /* 中层启动：3/4 号电机同步运行，下料舵机打开。 */
+                /* 中层启动：3/4号电机同步运行，PE9打包切断舵机不参与中层流程。 */
                 StartConveyorBelt(LAYER_MIDDLE, appCtrl.config.middleSpeed);
-                Lower_Layer_Open();
 #ifdef DEBUG_ENABLE
                 printf("[APP] Middle Process: Belt Running\r\n");
 #endif
@@ -334,11 +350,10 @@ static void Run_Auto_Process_FSM(void)
                 Bluetooth_SendString("[APP] Cutting Start...\r\n");
             }
 
-            if (App_StateTimeout(appCtrl.config.runDuration))
+            if (App_StateTimeout(appCtrl.config.middleRunDuration))
             {
                 StopConveyorBelt(LAYER_MIDDLE);
                 Set_Relay_Switch(RELAY_CUTTER, 0);
-                Lower_Layer_Close();
 #ifdef DEBUG_ENABLE
                 printf("[APP] Middle Process Done.\r\n");
 #endif
@@ -400,13 +415,15 @@ static void Run_Auto_Process_FSM(void)
         case STEP_PACK_TAIL:
             if (App_Consume_StateEntry())
             {
-                /* 推板到达估算终点后，7 号电机继续短时间旋转完成打包收尾。 */
+                /* 推板到达估算终点后，PE9舵机伸出剪断包料，7号电机继续运行。 */
+                Pack_Cutter_Extend();
                 Bluetooth_SendString("[APP] Pack Tail Running...\r\n");
             }
 
             if (App_StateTimeout(appCtrl.config.packTailTimeMs))
             {
                 StopPackMotor();
+                Pack_Cutter_Retract();
                 App_Enter_AutoState(STEP_LOWER_RETURN);
             }
             break;
@@ -464,7 +481,7 @@ static void Run_Auto_Process_FSM(void)
 #endif
                 StopConveyorBelt(LAYER_MIDDLE);
                 Set_Relay_Switch(RELAY_CUTTER, 0);
-                Lower_Layer_Close();
+                Pack_Cutter_Retract();
                 App_Enter_AutoState(STEP_WAIT_EMPTY_2);
             }
             break;

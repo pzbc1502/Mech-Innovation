@@ -107,7 +107,8 @@ static bool StartLowerPushAndPackMove(float screwSpeedRpm, float packSpeedRpm)
     }
 
     screwRpm = ClampSpeed(screwSpeedRpm, MAX_SPEED_LOWER_SCREW);
-    packRpm = ClampSpeed(packSpeedRpm, g_washingSystem.packMotor.maxSpeed);
+    (void)packSpeedRpm;
+    packRpm = ClampSpeed((float)PACK_MOTOR_SPEED_RPM, g_washingSystem.packMotor.maxSpeed);
 
     UpdateLowerScrewState(DIR_CCW, screwRpm);
 
@@ -140,8 +141,8 @@ static bool StartLowerPushAndPackMove(float screwSpeedRpm, float packSpeedRpm)
     Emm_V5_Vel_Control(g_washingSystem.packMotor.motorID,
                        DIR_CCW,
                        packRpm,
-                       LOWER_SCREW_ACCEL,
-                       true);
+                       PACK_MOTOR_ACCEL,
+                       false);
     DelayAfterCanCommand();
 
     Emm_V5_Synchronous_motion(BROADCAST_ADDR);
@@ -180,7 +181,7 @@ void WashingSystem_Init(void)
 
     ConfigureMotor(&g_washingSystem.packMotor, MOTOR_PACK, MAX_SPEED_PACK, DIR_CCW);
 
-    HAL_Delay(2000);
+    HAL_Delay(1000);
 
     for (i = 0; i < (uint8_t)(sizeof(allMotors) / sizeof(allMotors[0])); i++)
     {
@@ -343,7 +344,7 @@ bool StartPackMotor(float speedRpm)
     Emm_V5_Vel_Control(g_washingSystem.packMotor.motorID,
                        g_washingSystem.packMotor.direction,
                        rpm,
-                       LOWER_SCREW_ACCEL,
+                       PACK_MOTOR_ACCEL,
                        false);
     DelayAfterCanCommand();
 

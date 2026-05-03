@@ -39,12 +39,14 @@ typedef enum {
 
 #define DEFAULT_ACCEL          20
 #define LOWER_SCREW_ACCEL      0
+#define PACK_MOTOR_SPEED_RPM   30U
+#define PACK_MOTOR_ACCEL       5U
 
 /*
  * Screw push distance is 300 mm.
- * The current configured position target is 320000 pulses.
+ * The current configured position target is 240000 pulses.
  */
-#define LOWER_SCREW_PULSES     320000UL
+#define LOWER_SCREW_PULSES     120000UL
 
 typedef struct {
     uint8_t motorID;

@@ -25,7 +25,7 @@ typedef enum {
 
     STEP_LOWER_WEIGH,           /* 第三层称重，读取左右两路 HX711。 */
     STEP_LOWER_PUSH_AND_PACK,   /* 5/6号丝杆推板与7号打包电机同步启动。 */
-    STEP_PACK_TAIL,             /* 推板停止后，7号打包电机继续收尾运行。 */
+    STEP_PACK_TAIL,             /* 推板停止后，PE9舵机剪断包料，7号电机继续运行。 */
     STEP_LOWER_RETURN,          /* 5/6号丝杆推板返回初始位置。 */
     STEP_WAIT_NEXT_CYCLE,       /* 下一轮循环前的短等待。 */
 
@@ -70,13 +70,14 @@ typedef struct {
         float packMotorSpeed;         /* 7号打包电机速度，单位 RPM。 */
         uint32_t startDelayMs;        /* 中层启动到切割开始的等待时间。 */
         uint32_t stopDelayMs;         /* 优雅停机各层排空等待时间。 */
-        uint32_t runDuration;         /* 上层/中层主要运行时长。 */
+        uint32_t upperRunDuration;    /* 上层清洗运行时长。 */
+        uint32_t middleRunDuration;   /* 中层切割运行时长。 */
         uint32_t weighTime;           /* 称重前的稳定等待时间。 */
         uint32_t cutTime;             /* 切刀动作预留参数。 */
         uint32_t washTime;            /* 清洗动作预留参数。 */
-        uint32_t servoTime;           /* 舵机动作预留参数。 */
+        uint32_t servoTime;           /* 舵机动作预留参数，打包切断由 packTailTimeMs 控制。 */
         uint32_t lowerPushTimeoutMs;  /* 推板推动到位估算时间，当前不解析 CAN 到位反馈。 */
-        uint32_t packTailTimeMs;      /* 推板到位后，7号电机继续打包收尾时间。 */
+        uint32_t packTailTimeMs;      /* PE9舵机剪断包料并保持7号电机运行的时间。 */
         uint32_t lowerReturnTimeoutMs;/* 推板返回到位估算时间，当前不依赖限位开关。 */
         uint32_t cycleDelayMs;        /* 两轮自动流程之间的等待时间。 */
     } config;

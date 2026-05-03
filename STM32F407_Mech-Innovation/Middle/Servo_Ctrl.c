@@ -3,8 +3,7 @@
 void ServoSystem_Init(void)
 {
     Servo_Init();
-    Servo_Action(SERVO_LOWER_1, ACTION_CLOSE);
-    Servo_Action(SERVO_LOWER_2, ACTION_CLOSE);
+    Pack_Cutter_Retract();
 }
 
 void Servo_Action(ServoID_t id, ServoAction_t action)
@@ -19,14 +18,22 @@ void Servo_Set_Specific_Angle(ServoID_t id, uint16_t angle)
     Servo_SetAngleInt((ServoChannel_t)id, angle);
 }
 
+void Pack_Cutter_Retract(void)
+{
+    Servo_SetAngleInt((ServoChannel_t)SERVO_PACK_CUTTER, PACK_CUTTER_RETRACT_ANGLE);
+}
+
+void Pack_Cutter_Extend(void)
+{
+    Servo_SetAngleInt((ServoChannel_t)SERVO_PACK_CUTTER, PACK_CUTTER_EXTEND_ANGLE);
+}
+
 void Lower_Layer_Open(void)
 {
-    Servo_Action(SERVO_LOWER_1, ACTION_OPEN);
-    Servo_Action(SERVO_LOWER_2, ACTION_OPEN);
+    Pack_Cutter_Extend();
 }
 
 void Lower_Layer_Close(void)
 {
-    Servo_Action(SERVO_LOWER_1, ACTION_CLOSE);
-    Servo_Action(SERVO_LOWER_2, ACTION_CLOSE);
+    Pack_Cutter_Retract();
 }

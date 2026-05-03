@@ -12,6 +12,7 @@ typedef struct {
     uint16_t min_pulse_us;
     uint16_t max_pulse_us;
     uint16_t center_pulse_us;
+    uint16_t max_angle_deg;
 } ServoConfig_t;
 
 void Servo_Init(void);
