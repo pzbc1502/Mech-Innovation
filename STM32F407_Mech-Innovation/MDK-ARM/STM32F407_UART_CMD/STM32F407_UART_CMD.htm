@@ -3,7 +3,7 @@
 <title>Static Call Graph - [STM32F407_UART_CMD\STM32F407_UART_CMD.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image STM32F407_UART_CMD\STM32F407_UART_CMD.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sun May 03 21:40:48 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Mon May 04 20:32:37 2026
 <BR><P>
 <H3>Maximum Stack Usage =        288 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -389,8 +389,8 @@ Global Symbols
 <LI><a href="#[65]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsl
 </UL>
 <BR>[Called By]<UL><LI><a href="#[e3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_SetConfig
-<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetSysClockFreq
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
+<LI><a href="#[c2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetSysClockFreq
 <LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 <LI><a href="#[132]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_fp_digits
 </UL>
@@ -429,9 +429,9 @@ Global Symbols
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Init
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemClock_Config
-<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_GPIO_Init
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GPIO_Init
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WashingSystem_Init
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GPIO_Init
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_GPIO_Init
 </UL>
 
 <P><STRONG><a name="[153]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
@@ -502,8 +502,8 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[65]"></a>__aeabi_llsl</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, llshl.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<BR><BR>[Called By]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 </UL>
@@ -556,14 +556,14 @@ Global Symbols
 
 <P><STRONG><a name="[159]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
 
-<P><STRONG><a name="[73]"></a>App_Conwashing_Init</STRONG> (Thumb, 166 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Conwashing_Init))
+<P><STRONG><a name="[73]"></a>App_Conwashing_Init</STRONG> (Thumb, 176 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Conwashing_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = App_Conwashing_Init &rArr; WashingSystem_Init &rArr; Emm_V5_Modify_Ctrl_Mode &rArr; can_SendCmd &rArr; HAL_CAN_AddTxMessage
 </UL>
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
-<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WashingSystem_Init
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
+<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -589,8 +589,8 @@ Global Symbols
 <P><STRONG><a name="[82]"></a>App_Send_Cmd_Emergency</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Send_Cmd_Emergency))
 <BR><BR>[Stack]<UL><LI>Max Depth = 84<LI>Call Chain = App_Send_Cmd_Emergency &rArr; EmergencyStopAll &rArr; Emm_V5_Stop_Now &rArr; can_SendCmd &rArr; HAL_CAN_AddTxMessage
 </UL>
-<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
-<LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EmergencyStopAll
+<BR>[Calls]<UL><LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;EmergencyStopAll
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
 </UL>
 <BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Process_Bluetooth_Command
 <LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btn_four_cb
@@ -599,10 +599,10 @@ Global Symbols
 <P><STRONG><a name="[84]"></a>App_Send_Cmd_Resume</STRONG> (Thumb, 66 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Send_Cmd_Resume))
 <BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = App_Send_Cmd_Resume &rArr; Bluetooth_SendString &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
-<BR>[Calls]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
+<BR>[Calls]<UL><LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ResetEmergencyStop
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
-<LI><a href="#[85]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ResetEmergencyStop
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Process_Bluetooth_Command
@@ -622,9 +622,9 @@ Global Symbols
 <P><STRONG><a name="[87]"></a>App_Send_Cmd_Stop</STRONG> (Thumb, 64 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Send_Cmd_Stop))
 <BR><BR>[Stack]<UL><LI>Max Depth = 100<LI>Call Chain = App_Send_Cmd_Stop &rArr; StopWashingSystem &rArr; StopConveyorBelt &rArr; Emm_V5_Stop_Now &rArr; can_SendCmd &rArr; HAL_CAN_AddTxMessage
 </UL>
-<BR>[Calls]<UL><LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
+<BR>[Calls]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
 </UL>
 <BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Process_Bluetooth_Command
 <LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;btn_three_cb
@@ -976,8 +976,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_Init
-<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;WashingSystem_Init
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DelayAfterCanCommand
 </UL>
 
@@ -989,24 +989,24 @@ Global Symbols
 <LI><a href="#[b2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_CAN_MspInit
 <LI><a href="#[a1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_ADC_MspInit
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
-<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_GPIO_Init
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GPIO_Init
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_GPIO_Init
 </UL>
 
 <P><STRONG><a name="[f1]"></a>HAL_GPIO_ReadPin</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_ReadPin))
-<BR><BR>[Called By]<UL><LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;key_scan
-<LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadDt
+<BR><BR>[Called By]<UL><LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadDt
+<LI><a href="#[13c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;key_scan
 </UL>
 
 <P><STRONG><a name="[e8]"></a>HAL_GPIO_WritePin</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, stm32f4xx_hal_gpio.o(i.HAL_GPIO_WritePin))
 <BR><BR>[Called By]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Relay_Init
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_GPIO_Init
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Relay_Switch
+<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_WriteSck
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GPIO_Init
 <LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_W_SDA
 <LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_W_SCL
 <LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_GPIO_Init
-<LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_WriteSck
-<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GPIO_Init
 </UL>
 
 <P><STRONG><a name="[77]"></a>HAL_GetTick</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, stm32f4xx_hal.o(i.HAL_GetTick))
@@ -1018,14 +1018,14 @@ Global Symbols
 <LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Init
 <LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
-<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
-<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
-<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_ProcessWeighing
 <LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
 <LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_StartAuto
+<LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+<LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
 <LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
+<LI><a href="#[b8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_DMA_Abort
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 </UL>
 
 <P><STRONG><a name="[128]"></a>HAL_IncTick</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, stm32f4xx_hal.o(i.HAL_IncTick))
@@ -1274,8 +1274,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 <LI><a href="#[e6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_WaitOnFlagUntilTimeout
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fputc
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
+<BR>[Called By]<UL><LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
+<LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fputc
 </UL>
 
 <P><STRONG><a name="[12b]"></a>HAL_UART_TxCpltCallback</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, stm32f4xx_hal_uart.o(i.HAL_UART_TxCpltCallback))
@@ -1292,13 +1292,13 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[eb]"></a>HX711_Init</STRONG> (Thumb, 80 bytes, Stack size 8 bytes, hx711.o(i.HX711_Init))
-<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = HX711_Init &rArr; HX711_TareChannel &rArr; __aeabi_uldivmod
+<BR><BR>[Stack]<UL><LI>Max Depth = 88<LI>Call Chain = HX711_Init &rArr; HX711_TareChannel &rArr; HX711_ReadChannel &rArr; HX711_WriteSck
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
-<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
+<BR>[Calls]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_WriteSck
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GPIO_Init
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memcpy4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1329,17 +1329,17 @@ Global Symbols
 <LI><a href="#[ef]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadDt
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetDevice
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
-<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetWeightChannel
+<BR>[Called By]<UL><LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetWeightChannel
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
 </UL>
 
 <P><STRONG><a name="[ed]"></a>HX711_TareChannel</STRONG> (Thumb, 106 bytes, Stack size 40 bytes, hx711.o(i.HX711_TareChannel))
-<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = HX711_TareChannel &rArr; __aeabi_uldivmod
+<BR><BR>[Stack]<UL><LI>Max Depth = 80<LI>Call Chain = HX711_TareChannel &rArr; HX711_ReadChannel &rArr; HX711_WriteSck
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
+<BR>[Calls]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetDevice
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 </UL>
 <BR>[Called By]<UL><LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_Init
 </UL>
@@ -1385,7 +1385,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[f3]"></a>MX_GPIO_Init</STRONG> (Thumb, 400 bytes, Stack size 32 bytes, gpio.o(i.MX_GPIO_Init))
+<P><STRONG><a name="[f3]"></a>MX_GPIO_Init</STRONG> (Thumb, 382 bytes, Stack size 32 bytes, gpio.o(i.MX_GPIO_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = MX_GPIO_Init &rArr; HAL_GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
@@ -1457,9 +1457,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
 <LI><a href="#[a3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_Init
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_W_SDA
 <LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_W_SCL
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_Init
 </UL>
@@ -1560,8 +1560,8 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = OLED_ShowString &rArr; OLED_ShowChar &rArr; OLED_ShowImage &rArr; OLED_ClearArea
 </UL>
 <BR>[Calls]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowChar
-<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowImage
 <LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcmp
+<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowImage
 </UL>
 <BR>[Called By]<UL><LI><a href="#[113]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Process_Bluetooth_Command
 <LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1661,12 +1661,12 @@ Global Symbols
 <LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_Clear
 <LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Printf
 <LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Relay_Switch
-<LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strncmp
-<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 <LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Stop
 <LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_StartAuto
 <LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Resume
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Emergency
+<LI><a href="#[114]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strncmp
+<LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 <LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1695,8 +1695,8 @@ Global Symbols
 <P><STRONG><a name="[120]"></a>ServoSystem_Init</STRONG> (Thumb, 12 bytes, Stack size 8 bytes, servo_ctrl.o(i.ServoSystem_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = ServoSystem_Init &rArr; Pack_Cutter_Retract &rArr; Servo_SetAngleInt
 </UL>
-<BR>[Calls]<UL><LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Servo_Init
-<LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Retract
+<BR>[Calls]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Retract
+<LI><a href="#[121]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Servo_Init
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -1772,8 +1772,8 @@ Global Symbols
 <LI><a href="#[123]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;GetConveyorBeltByLayer
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DelayAfterCanCommand
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
 </UL>
 
 <P><STRONG><a name="[116]"></a>StopLowerScrew</STRONG> (Thumb, 74 bytes, Stack size 8 bytes, conveyor_belt.o(i.StopLowerScrew))
@@ -1782,8 +1782,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Stop_Now
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DelayAfterCanCommand
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
 </UL>
 
 <P><STRONG><a name="[117]"></a>StopPackMotor</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, conveyor_belt.o(i.StopPackMotor))
@@ -1792,8 +1792,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[96]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Stop_Now
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DelayAfterCanCommand
 </UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-<LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<BR>[Called By]<UL><LI><a href="#[88]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopWashingSystem
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
 </UL>
 
 <P><STRONG><a name="[88]"></a>StopWashingSystem</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, conveyor_belt.o(i.StopWashingSystem))
@@ -1880,14 +1880,14 @@ Global Symbols
 <P><STRONG><a name="[74]"></a>WashingSystem_Init</STRONG> (Thumb, 320 bytes, Stack size 24 bytes, conveyor_belt.o(i.WashingSystem_Init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 92<LI>Call Chain = WashingSystem_Init &rArr; Emm_V5_Modify_Ctrl_Mode &rArr; can_SendCmd &rArr; HAL_CAN_AddTxMessage
 </UL>
-<BR>[Calls]<UL><LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Reset_CurPos_To_Zero
+<BR>[Calls]<UL><LI><a href="#[9c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Reset_CurPos_To_Zero
 <LI><a href="#[9b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Reset_Clog_Pro
 <LI><a href="#[99]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Modify_Ctrl_Mode
 <LI><a href="#[97]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_En_Control
-<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 <LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;DelayAfterCanCommand
 <LI><a href="#[12e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ConfigureMotor
+<LI><a href="#[95]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Init
 </UL>
@@ -1995,10 +1995,10 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[f0]"></a>delay_us</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, delay_us.o(i.delay_us))
-<BR><BR>[Called By]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_I2C_Stop
+<BR><BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_I2C_Stop
 <LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_I2C_Start
 <LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_I2C_SendByte
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
 </UL>
 
 <P><STRONG><a name="[147]"></a>flex_button_register</STRONG> (Thumb, 156 bytes, Stack size 0 bytes, mid_button.o(i.flex_button_register))
@@ -2072,8 +2072,8 @@ Global Symbols
 <P><STRONG><a name="[145]"></a>user_button_init</STRONG> (Thumb, 220 bytes, Stack size 8 bytes, mid_button.o(i.user_button_init))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = user_button_init
 </UL>
-<BR>[Calls]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
-<LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flex_button_register
+<BR>[Calls]<UL><LI><a href="#[147]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;flex_button_register
+<LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr4
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
@@ -2173,6 +2173,87 @@ Local Symbols
 <LI><a href="#[db]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_EndRxTransfer
 </UL>
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+</UL>
+
+<P><STRONG><a name="[118]"></a>App_Consume_StateEntry</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, app_conveyor.o(i.App_Consume_StateEntry))
+<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
+</UL>
+
+<P><STRONG><a name="[76]"></a>App_Enter_AutoState</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Enter_AutoState))
+<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = App_Enter_AutoState
+</UL>
+<BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
+</UL>
+<BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Init
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Stop
+<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_StartAuto
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Resume
+</UL>
+
+<P><STRONG><a name="[7e]"></a>App_ProcessWeighing</STRONG> (Thumb, 506 bytes, Stack size 48 bytes, app_conveyor.o(i.App_ProcessWeighing))
+<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = App_ProcessWeighing &rArr; HX711_GetWeightChannel &rArr; HX711_ReadChannel &rArr; HX711_WriteSck
+</UL>
+<BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
+<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelValid
+<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelReady
+<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetWeightChannel
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
+</UL>
+
+<P><STRONG><a name="[11c]"></a>App_ResetWeighing</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, app_conveyor.o(i.App_ResetWeighing))
+<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
+</UL>
+
+<P><STRONG><a name="[7b]"></a>App_SetActuatorsSafe</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, app_conveyor.o(i.App_SetActuatorsSafe))
+<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = App_SetActuatorsSafe &rArr; Pack_Cutter_Retract &rArr; Servo_SetAngleInt
+</UL>
+<BR>[Calls]<UL><LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Retract
+<LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Relay_Switch
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
+<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
+<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Stop
+<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Resume
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Emergency
+</UL>
+
+<P><STRONG><a name="[11a]"></a>App_StateTimeout</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, app_conveyor.o(i.App_StateTimeout))
+<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
+</UL>
+
+<P><STRONG><a name="[7c]"></a>Run_Auto_Process_FSM</STRONG> (Thumb, 1112 bytes, Stack size 56 bytes, app_conveyor.o(i.Run_Auto_Process_FSM))
+<BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = Run_Auto_Process_FSM &rArr; Bluetooth_Printf &rArr; Bluetooth_SendString &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
+</UL>
+<BR>[Calls]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_Update
+<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowString
+<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowNum
+<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Printf
+<LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
+<LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopPackMotor
+<LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopLowerScrew
+<LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopConveyorBelt
+<LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartLowerReturn
+<LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartLowerPushAndPack
+<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartConveyorBelt
+<LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Retract
+<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Extend
+<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
+<LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_StateTimeout
+<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
+<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_ResetWeighing
+<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_ProcessWeighing
+<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
+<LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Consume_StateEntry
+<LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Relay_Switch
+<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
+</UL>
+<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
+</UL>
+
+<P><STRONG><a name="[7d]"></a>Run_Maintenance_Mode</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, app_conveyor.o(i.Run_Maintenance_Mode))
+<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
 </UL>
 
 <P><STRONG><a name="[13b]"></a>button_four_read</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, mid_button.o(i.button_four_read), UNUSED)
@@ -2286,11 +2367,11 @@ Local Symbols
 </UL>
 
 <P><STRONG><a name="[e9]"></a>HX711_GetDevice</STRONG> (Thumb, 34 bytes, Stack size 0 bytes, hx711.o(i.HX711_GetDevice))
-<BR><BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
-<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
-<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelValid
+<BR><BR>[Called By]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelValid
 <LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelReady
 <LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetWeightChannel
+<LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_TareChannel
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
 </UL>
 
 <P><STRONG><a name="[ef]"></a>HX711_ReadDt</STRONG> (Thumb, 14 bytes, Stack size 8 bytes, hx711.o(i.HX711_ReadDt))
@@ -2298,8 +2379,8 @@ Local Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_ReadPin
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelReady
+<BR>[Called By]<UL><LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelReady
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
 </UL>
 
 <P><STRONG><a name="[ec]"></a>HX711_WriteSck</STRONG> (Thumb, 18 bytes, Stack size 16 bytes, hx711.o(i.HX711_WriteSck))
@@ -2311,93 +2392,12 @@ Local Symbols
 <LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_ReadChannel
 </UL>
 
-<P><STRONG><a name="[118]"></a>App_Consume_StateEntry</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, app_conveyor.o(i.App_Consume_StateEntry))
-<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-</UL>
-
-<P><STRONG><a name="[76]"></a>App_Enter_AutoState</STRONG> (Thumb, 38 bytes, Stack size 8 bytes, app_conveyor.o(i.App_Enter_AutoState))
-<BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = App_Enter_AutoState
-</UL>
-<BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-</UL>
-<BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Init
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Stop
-<LI><a href="#[86]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_StartAuto
-<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Resume
-</UL>
-
-<P><STRONG><a name="[7e]"></a>App_ProcessWeighing</STRONG> (Thumb, 506 bytes, Stack size 48 bytes, app_conveyor.o(i.App_ProcessWeighing))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = App_ProcessWeighing &rArr; HX711_GetWeightChannel &rArr; HX711_ReadChannel &rArr; HX711_WriteSck
-</UL>
-<BR>[Calls]<UL><LI><a href="#[77]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
-<LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelValid
-<LI><a href="#[7f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_IsChannelReady
-<LI><a href="#[80]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HX711_GetWeightChannel
-</UL>
-<BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-</UL>
-
-<P><STRONG><a name="[11c]"></a>App_ResetWeighing</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, app_conveyor.o(i.App_ResetWeighing))
-<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-</UL>
-
-<P><STRONG><a name="[7b]"></a>App_SetActuatorsSafe</STRONG> (Thumb, 24 bytes, Stack size 8 bytes, app_conveyor.o(i.App_SetActuatorsSafe))
-<BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = App_SetActuatorsSafe &rArr; Pack_Cutter_Retract &rArr; Servo_SetAngleInt
-</UL>
-<BR>[Calls]<UL><LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Relay_Switch
-<LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Retract
-</UL>
-<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
-<LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-<LI><a href="#[87]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Stop
-<LI><a href="#[84]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Resume
-<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Send_Cmd_Emergency
-</UL>
-
-<P><STRONG><a name="[11a]"></a>App_StateTimeout</STRONG> (Thumb, 24 bytes, Stack size 0 bytes, app_conveyor.o(i.App_StateTimeout))
-<BR><BR>[Called By]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Run_Auto_Process_FSM
-</UL>
-
-<P><STRONG><a name="[7c]"></a>Run_Auto_Process_FSM</STRONG> (Thumb, 1112 bytes, Stack size 56 bytes, app_conveyor.o(i.Run_Auto_Process_FSM))
-<BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = Run_Auto_Process_FSM &rArr; Bluetooth_Printf &rArr; Bluetooth_SendString &rArr; HAL_UART_Transmit &rArr; UART_WaitOnFlagUntilTimeout
-</UL>
-<BR>[Calls]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_Update
-<LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowString
-<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;OLED_ShowNum
-<LI><a href="#[8d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_Printf
-<LI><a href="#[79]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Bluetooth_SendString
-<LI><a href="#[89]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Set_Relay_Switch
-<LI><a href="#[11d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
-<LI><a href="#[11a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_StateTimeout
-<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_SetActuatorsSafe
-<LI><a href="#[11c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_ResetWeighing
-<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_ProcessWeighing
-<LI><a href="#[76]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Enter_AutoState
-<LI><a href="#[118]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Consume_StateEntry
-<LI><a href="#[8a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Retract
-<LI><a href="#[111]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Pack_Cutter_Extend
-<LI><a href="#[117]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopPackMotor
-<LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopLowerScrew
-<LI><a href="#[11b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StopConveyorBelt
-<LI><a href="#[11f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartLowerReturn
-<LI><a href="#[11e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartLowerPushAndPack
-<LI><a href="#[119]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;StartConveyorBelt
-<LI><a href="#[78]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
-</UL>
-<BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
-</UL>
-
-<P><STRONG><a name="[7d]"></a>Run_Maintenance_Mode</STRONG> (Thumb, 2 bytes, Stack size 0 bytes, app_conveyor.o(i.Run_Maintenance_Mode))
-<BR><BR>[Called By]<UL><LI><a href="#[7a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;App_Conwashing_Task
-</UL>
-
 <P><STRONG><a name="[132]"></a>_fp_digits</STRONG> (Thumb, 366 bytes, Stack size 64 bytes, printfa.o(i._fp_digits), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
+<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 <LI><a href="#[133]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_cdrcmple
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2ulz
 </UL>
 <BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core

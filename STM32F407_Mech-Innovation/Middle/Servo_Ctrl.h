@@ -13,11 +13,11 @@ typedef enum {
     ACTION_CLOSE = 0,
     ACTION_OPEN = 1
 } ServoAction_t;
-
+   
 #define ANGLE_CLOSE 0
-#define ANGLE_OPEN  90
+#define ANGLE_OPEN  45
 #define PACK_CUTTER_RETRACT_ANGLE 0
-#define PACK_CUTTER_EXTEND_ANGLE  90
+#define PACK_CUTTER_EXTEND_ANGLE  130
 
 void ServoSystem_Init(void);
 void Servo_Action(ServoID_t id, ServoAction_t action);

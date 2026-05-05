@@ -46,7 +46,7 @@ typedef enum {
  * Screw push distance is 300 mm.
  * The current configured position target is 240000 pulses.
  */
-#define LOWER_SCREW_PULSES     120000UL
+#define LOWER_SCREW_PULSES     105000UL
 
 typedef struct {
     uint8_t motorID;

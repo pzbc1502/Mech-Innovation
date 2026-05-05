@@ -179,9 +179,9 @@ void App_Conwashing_Init(void)
     /* 中层 3/4 号传送带电机速度，单位 RPM。 */
     appCtrl.config.middleSpeed = 60.0f;
     /* 第三层 5/6 号丝杆推板速度，位置模式推动和返回都使用该速度。 */
-    appCtrl.config.lowerScrewSpeed = 150.0f;
+    appCtrl.config.lowerScrewSpeed = 200.0f;
     /* 7 号旋转打包电机速度，推板推动时同步启动。 */
-    appCtrl.config.packMotorSpeed = 30.0f;
+    appCtrl.config.packMotorSpeed = 120.0f;
 
     /* 上层清洗运行时间：只影响 1/2 号上层传送带和水泵。 */
     appCtrl.config.upperRunDuration = 5500;
@@ -199,12 +199,12 @@ void App_Conwashing_Init(void)
     /* 预留切刀动作时间参数，当前切刀随中层切割阶段开关。 */
     appCtrl.config.cutTime = 200;
     /* 预留舵机动作时间参数，当前打包切断由 packTailTimeMs 控制。 */
-    appCtrl.config.servoTime = 200;
+    appCtrl.config.servoTime = 3000;
     /* 当前 v1 不解析 CAN 到位反馈，推板推动按时间估算完成。 */
     /* 30RPM、8mm 导程、300mm 行程约 75s，10s, 留少量余量。 */
     appCtrl.config.lowerPushTimeoutMs = 15000;
     /* 推板到位后，7 号打包电机继续旋转收尾的时间。 */
-    appCtrl.config.packTailTimeMs = 1000;
+    appCtrl.config.packTailTimeMs = 5000;
     /* 当前 v1 不依赖限位开关，推板返回同样按时间估算完成。 */
     appCtrl.config.lowerReturnTimeoutMs = 15000;
     /* 一轮完整流程结束后，进入下一轮前的短等待。 */
